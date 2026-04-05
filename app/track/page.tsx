@@ -9,32 +9,22 @@ import { PRODUCT } from '@/lib/cart/context'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
-interface OrderStatus {
+const STATUS_STEPS = ['RECEIVED', 'PAID', 'SHIPPED', 'TRANSIT', 'DELIVERED'] as const
+
+interface OrderData {
   orderNumber: string
   date: string
-  currentStep: number
-  trackingNumber: string
+  status: string
+  trackingNumber: string | null
   items: Array<{ size: string; quantity: number }>
   address: string
-}
-
-// Mock data for demonstration
-const mockOrders: Record<string, OrderStatus> = {
-  'OU-20250401-DEMO': {
-    orderNumber: 'OU-20250401-DEMO',
-    date: '01.04.2025',
-    currentStep: 2,
-    trackingNumber: 'CDEK-123456789',
-    items: [{ size: 'M', quantity: 1 }],
-    address: 'г. Алматы, ул. ****** д. ** кв. **',
-  },
 }
 
 export default function TrackOrderPage() {
   const { t } = useI18n()
   const [orderNumber, setOrderNumber] = useState('')
   const [isSearching, setIsSearching] = useState(false)
-  const [order, setOrder] = useState<OrderStatus | null>(null)
+  const [order, setOrder] = useState<OrderData | null>(null)
   const [notFound, setNotFound] = useState(false)
 
   const handleSearch = async (e: React.FormEvent) => {
@@ -43,20 +33,34 @@ export default function TrackOrderPage() {
 
     setIsSearching(true)
     setNotFound(false)
+    setOrder(null)
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    try {
+      const res = await fetch(`/api/orders/${encodeURIComponent(orderNumber.trim())}`)
 
-    const foundOrder = mockOrders[orderNumber.toUpperCase()]
-    if (foundOrder) {
-      setOrder(foundOrder)
-    } else {
-      setOrder(null)
+      if (res.status === 404) {
+        setNotFound(true)
+      } else if (res.ok) {
+        const data = await res.json()
+        setOrder({
+          orderNumber: data.orderNumber,
+          date: new Date(data.date).toLocaleDateString('ru-RU'),
+          status: data.status,
+          trackingNumber: data.trackingNumber,
+          items: data.items,
+          address: data.address,
+        })
+      } else {
+        setNotFound(true)
+      }
+    } catch {
       setNotFound(true)
     }
 
     setIsSearching(false)
   }
+
+  const currentStepIndex = order ? STATUS_STEPS.indexOf(order.status as typeof STATUS_STEPS[number]) : -1
 
   const steps = [
     { key: 'received', label: t.track.status.received },
@@ -68,7 +72,6 @@ export default function TrackOrderPage() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* Header */}
       <header className="border-b border-white/10">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex items-center justify-between">
@@ -77,7 +80,7 @@ export default function TrackOrderPage() {
               className="flex items-center gap-2 text-white/70 hover:text-white transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
-              <span className="text-sm">twkkl</span>
+              <span className="text-sm">TAWAKKUL</span>
             </Link>
             <h1 className="text-lg font-medium">{t.track.title}</h1>
             <div className="w-16" />
@@ -86,7 +89,6 @@ export default function TrackOrderPage() {
       </header>
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-        {/* Search Form */}
         <motion.form
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -113,12 +115,8 @@ export default function TrackOrderPage() {
               )}
             </Button>
           </div>
-          <p className="text-xs text-white/40 mt-3">
-            Demo: OU-20250401-DEMO
-          </p>
         </motion.form>
 
-        {/* Not Found */}
         {notFound && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -130,7 +128,6 @@ export default function TrackOrderPage() {
           </motion.div>
         )}
 
-        {/* Order Result */}
         {order && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -138,7 +135,6 @@ export default function TrackOrderPage() {
             transition={{ duration: 0.5 }}
             className="space-y-8"
           >
-            {/* Order Header */}
             <div className="flex items-center justify-between border-b border-white/10 pb-6">
               <div>
                 <p className="text-sm text-white/50">{t.success.orderNumber}</p>
@@ -152,16 +148,14 @@ export default function TrackOrderPage() {
               </div>
             </div>
 
-            {/* Status Timeline */}
             <div className="relative">
               {steps.map((step, index) => {
-                const isCompleted = index < order.currentStep
-                const isCurrent = index === order.currentStep
-                const isPending = index > order.currentStep
+                const isCompleted = index < currentStepIndex
+                const isCurrent = index === currentStepIndex
+                const isPending = index > currentStepIndex
 
                 return (
                   <div key={step.key} className="flex gap-4 pb-8 last:pb-0">
-                    {/* Line and Icon */}
                     <div className="flex flex-col items-center">
                       <div
                         className={`w-8 h-8 rounded-full flex items-center justify-center ${
@@ -189,7 +183,6 @@ export default function TrackOrderPage() {
                       )}
                     </div>
 
-                    {/* Content */}
                     <div className="pt-1">
                       <p
                         className={`font-medium ${
@@ -204,13 +197,13 @@ export default function TrackOrderPage() {
               })}
             </div>
 
-            {/* Tracking Number */}
-            <div className="p-4 bg-white/5 rounded-lg">
-              <p className="text-sm text-white/50 mb-1">{t.track.trackingNumber}</p>
-              <p className="font-mono">{order.trackingNumber}</p>
-            </div>
+            {order.trackingNumber && (
+              <div className="p-4 bg-white/5 rounded-lg">
+                <p className="text-sm text-white/50 mb-1">{t.track.trackingNumber}</p>
+                <p className="font-mono">{order.trackingNumber}</p>
+              </div>
+            )}
 
-            {/* Order Items */}
             <div className="p-4 bg-white/5 rounded-lg">
               <p className="text-sm text-white/50 mb-3">{t.success.details}</p>
               {order.items.map((item, index) => (
@@ -221,7 +214,6 @@ export default function TrackOrderPage() {
               ))}
             </div>
 
-            {/* Delivery Address */}
             <div className="p-4 bg-white/5 rounded-lg">
               <p className="text-sm text-white/50 mb-1">
                 {t.track.deliveryAddress}
@@ -229,7 +221,6 @@ export default function TrackOrderPage() {
               <p>{order.address}</p>
             </div>
 
-            {/* WhatsApp Contact */}
             <div className="text-center pt-4">
               <a
                 href="https://wa.me/77009570233"

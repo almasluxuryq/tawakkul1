@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderStatus {
+  RECEIVED
+  PAID
+  SHIPPED
+  TRANSIT
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  KASPI
+  VTB
+  COD
+}
+
+enum Country {
+  KZ
+  RU
+}
+
+model Order {
+  id              String        @id @default(cuid())
+  orderNumber     String        @unique
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Contact
+  name            String
+  phone           String
+  email           String?
+  messenger       String?
+
+  // Delivery
+  country         Country
+  city            String
+  address         String
+  postalCode      String?
+  deliveryMethod  String
+  trackingNumber  String?
+
+  // Payment
+  paymentMethod   PaymentMethod
+  status          OrderStatus   @default(RECEIVED)
+
+  // Order items
+  items           OrderItem[]
+
+  // Totals
+  totalKZT        Int
+  totalUSD        Int
+  totalRUB        Int
+
+  @@index([orderNumber])
+  @@index([phone])
+  @@index([status])
+}
+
+model OrderItem {
+  id        String @id @default(cuid())
+  orderId   String
+  order     Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  size      String
+  quantity  Int
+  priceKZT  Int
+
+  @@index([orderId])
+}

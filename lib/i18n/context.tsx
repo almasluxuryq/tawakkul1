@@ -28,7 +28,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(STORAGE_KEY, lang)
   }
 
-  const t = translations[language]
+  const t = translations[language] as unknown as Translations
 
   return (
     <I18nContext.Provider value={{ language, setLanguage, t }}>

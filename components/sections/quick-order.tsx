@@ -123,6 +123,7 @@ export function QuickOrderSection() {
                 <div className="flex items-center gap-4">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    aria-label={t.cart.decreaseQty}
                     className="w-10 h-10 border border-white/20 flex items-center justify-center hover:border-white/50 transition-colors duration-300"
                   >
                     <Minus className="h-4 w-4" />
@@ -130,6 +131,7 @@ export function QuickOrderSection() {
                   <span className="w-8 text-center text-lg">{quantity}</span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
+                    aria-label={t.cart.increaseQty}
                     className="w-10 h-10 border border-white/20 flex items-center justify-center hover:border-white/50 transition-colors duration-300"
                   >
                     <Plus className="h-4 w-4" />
@@ -166,7 +168,7 @@ export function QuickOrderSection() {
               {formatPrice(PRODUCT.priceKZT, t.common.price.kzt)}
             </p>
             <p className="text-xs text-white/40">
-              {selectedSize} · {quantity} шт.
+              {selectedSize} · {quantity} {t.cart.pieces}
             </p>
           </div>
           <Button

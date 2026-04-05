@@ -17,7 +17,7 @@ export default function HomePage() {
   return (
     <>
       <Header />
-      <main>
+      <main className="pb-20 lg:pb-0">
         <HeroSection />
         <ProductDetailsSection />
         <FabricSection />

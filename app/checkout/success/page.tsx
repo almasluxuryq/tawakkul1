@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Check, MessageCircle } from 'lucide-react'
+import { Check, MessageCircle, ExternalLink, Send } from 'lucide-react'
 import { useI18n } from '@/lib/i18n/context'
 import { PRODUCT } from '@/lib/cart/context'
 import { Button } from '@/components/ui/button'
@@ -113,6 +113,69 @@ export default function CheckoutSuccessPage() {
           </motion.div>
         )}
 
+        {/* Payment Link */}
+        {order && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.55 }}
+            className="bg-white/5 rounded-lg p-6 mb-6 border border-white/10"
+          >
+            <h3 className="text-sm text-white/50 mb-4">{t.success.paymentLink}</h3>
+            {order.paymentMethod === 'kaspi' ? (
+              <a
+                href="https://pay.kaspi.kz/pay/anpwu3nf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block"
+              >
+                <Button className="w-full bg-white text-black hover:bg-white/90 py-6 text-base font-medium gap-2">
+                  <ExternalLink className="h-5 w-5" />
+                  {t.success.payNow}
+                </Button>
+              </a>
+            ) : (
+              <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                <p className="text-xs text-white/50 mb-2">VTB</p>
+                <p className="text-lg font-mono tracking-wider mb-1">2204 3601 0035 7829</p>
+                <p className="text-sm text-white/70">ALMAS NURBEKULY</p>
+              </div>
+            )}
+
+            <p className="text-sm text-white/50 mt-5 mb-3">{t.success.sendReceipt}</p>
+            <div className="flex gap-3">
+              <a
+                href="https://t.me/tawakkulgpt"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1"
+              >
+                <Button
+                  variant="outline"
+                  className="w-full border-white/20 text-white hover:bg-white/10 py-4 gap-2"
+                >
+                  <Send className="h-4 w-4" />
+                  Telegram
+                </Button>
+              </a>
+              <a
+                href="https://wa.me/77009570233"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1"
+              >
+                <Button
+                  variant="outline"
+                  className="w-full border-white/20 text-white hover:bg-white/10 py-4 gap-2"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  WhatsApp
+                </Button>
+              </a>
+            </div>
+          </motion.div>
+        )}
+
         {/* Actions */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -128,21 +191,6 @@ export default function CheckoutSuccessPage() {
               {t.success.trackOrder}
             </Button>
           </Link>
-
-          <a
-            href="https://wa.me/77009570233"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block"
-          >
-            <Button
-              variant="ghost"
-              className="w-full text-white/70 hover:text-white hover:bg-white/10 py-6 gap-2"
-            >
-              <MessageCircle className="h-5 w-5" />
-              {t.success.whatsapp}
-            </Button>
-          </a>
         </motion.div>
 
         {/* Confirmation note */}
@@ -166,7 +214,7 @@ export default function CheckoutSuccessPage() {
             href="/"
             className="text-sm text-white/50 hover:text-white transition-colors underline underline-offset-4"
           >
-            twkkl
+            TAWAKKUL
           </Link>
         </motion.div>
       </motion.div>

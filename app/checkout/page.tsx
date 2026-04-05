@@ -3,8 +3,12 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Shield, Truck, RotateCcw } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 import { useI18n } from '@/lib/i18n/context'
 import { useCart, PRODUCT } from '@/lib/cart/context'
 import { Button } from '@/components/ui/button'
@@ -17,14 +21,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 
 type Country = 'kz' | 'ru'
-type PaymentMethod = 'kaspi' | 'vtb' | 'cod'
+type PaymentMethod = 'kaspi' | 'vtb'
 
 const deliveryMethods = {
   kz: ['kazpost', 'cdek'] as const,
   ru: ['cdek', 'pochta'] as const,
+}
+
+function useCheckoutSchema() {
+  const { t } = useI18n()
+  return z.object({
+    name: z.string().min(1, t.validation.nameRequired).min(2, t.validation.nameMin),
+    phone: z.string().min(1, t.validation.phoneRequired).regex(/^\+?[\d\s\-()]{7,}$/, t.validation.phoneInvalid),
+    email: z.string().optional().refine(
+      (val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
+      { message: '' }
+    ),
+    messenger: z.string().optional(),
+    city: z.string().min(1, t.validation.cityRequired),
+    address: z.string().min(1, t.validation.addressRequired),
+    postalCode: z.string().optional(),
+  })
+}
+
+type CheckoutFormData = z.infer<ReturnType<typeof useCheckoutSchema>>
+
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null
+  return <p className="text-xs text-red-400 mt-1">{message}</p>
 }
 
 export default function CheckoutPage() {
@@ -32,20 +58,34 @@ export default function CheckoutPage() {
   const router = useRouter()
   const { items, totalPriceKZT, totalPriceUSD, totalPriceRUB, clearCart } = useCart()
 
-  // Form state
-  const [name, setName] = useState('')
-  const [phone, setPhone] = useState('')
-  const [email, setEmail] = useState('')
-  const [messenger, setMessenger] = useState('')
+  const schema = useCheckoutSchema()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CheckoutFormData>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      name: '',
+      phone: '',
+      email: '',
+      messenger: '',
+      city: '',
+      address: '',
+      postalCode: '',
+    },
+  })
+
   const [country, setCountry] = useState<Country>('kz')
-  const [city, setCity] = useState('')
-  const [address, setAddress] = useState('')
-  const [postalCode, setPostalCode] = useState('')
   const [deliveryMethod, setDeliveryMethod] = useState<string>('cdek')
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('kaspi')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Redirect if cart is empty
+  const handleCountryChange = (v: Country) => {
+    setCountry(v)
+    setPaymentMethod(v === 'kz' ? 'kaspi' : 'vtb')
+  }
+
   useEffect(() => {
     if (items.length === 0) {
       router.push('/')
@@ -59,42 +99,68 @@ export default function CheckoutPage() {
   const estimatedDeliveryCost = country === 'kz' ? 1600 : 1000
   const deliveryCurrency = country === 'kz' ? t.common.price.kzt : t.common.price.rub
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const onSubmit = async (data: CheckoutFormData) => {
     setIsSubmitting(true)
 
-    // Generate order number
-    const orderNumber = `OU-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-
-    // Store order details in sessionStorage for success page
-    sessionStorage.setItem(
-      'lastOrder',
-      JSON.stringify({
-        orderNumber,
-        items,
-        totalPriceKZT,
-        name,
-        phone,
-        city,
-        paymentMethod,
+    try {
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: data.name,
+          phone: data.phone,
+          email: data.email || '',
+          messenger: data.messenger || '',
+          country: country.toUpperCase(),
+          city: data.city,
+          address: data.address,
+          postalCode: data.postalCode || '',
+          deliveryMethod,
+          paymentMethod: paymentMethod.toUpperCase(),
+          items: items.map((item) => ({
+            size: item.size,
+            quantity: item.quantity,
+            priceKZT: item.quantity * PRODUCT.priceKZT,
+          })),
+          totalKZT: totalPriceKZT,
+          totalUSD: totalPriceUSD,
+          totalRUB: totalPriceRUB,
+        }),
       })
-    )
 
-    // Clear cart and redirect
-    clearCart()
-    router.push('/checkout/success')
+      if (!res.ok) throw new Error('Order failed')
+
+      const { orderNumber } = await res.json()
+
+      sessionStorage.setItem(
+        'lastOrder',
+        JSON.stringify({
+          orderNumber,
+          items,
+          totalPriceKZT,
+          name: data.name,
+          phone: data.phone,
+          city: data.city,
+          paymentMethod,
+        })
+      )
+
+      clearCart()
+      router.push('/checkout/success')
+    } catch {
+      setIsSubmitting(false)
+    }
   }
 
   if (items.length === 0) {
     return null
   }
 
+  const inputClass = 'bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-white/30'
+  const inputErrorClass = 'bg-white/5 border-red-500/50 text-white placeholder:text-white/30 focus:border-red-400'
+
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* Header */}
       <header className="border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
@@ -103,16 +169,16 @@ export default function CheckoutPage() {
               className="flex items-center gap-2 text-white/70 hover:text-white transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
-              <span className="text-sm">twkkl</span>
+              <span className="text-sm">TAWAKKUL</span>
             </Link>
             <h1 className="text-lg font-medium">{t.checkout.title}</h1>
-            <div className="w-16" /> {/* Spacer for centering */}
+            <div className="w-20" />
           </div>
         </div>
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
             {/* Left Column - Form */}
             <div className="lg:col-span-3 space-y-8">
@@ -131,35 +197,33 @@ export default function CheckoutPage() {
                     <Label htmlFor="name">{t.checkout.contact.name} *</Label>
                     <Input
                       id="name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      {...register('name')}
                       placeholder={t.checkout.contact.namePlaceholder}
-                      required
-                      className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-white/30"
+                      className={errors.name ? inputErrorClass : inputClass}
                     />
+                    <FieldError message={errors.name?.message} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="phone">{t.checkout.contact.phone} *</Label>
                     <Input
                       id="phone"
                       type="tel"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
+                      {...register('phone')}
                       placeholder={t.checkout.contact.phonePlaceholder}
-                      required
-                      className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-white/30"
+                      className={errors.phone ? inputErrorClass : inputClass}
                     />
+                    <FieldError message={errors.phone?.message} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email">{t.checkout.contact.email}</Label>
                     <Input
                       id="email"
                       type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      {...register('email')}
                       placeholder={t.checkout.contact.emailPlaceholder}
-                      className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-white/30"
+                      className={errors.email ? inputErrorClass : inputClass}
                     />
+                    <FieldError message={errors.email?.message} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="messenger">
@@ -167,10 +231,9 @@ export default function CheckoutPage() {
                     </Label>
                     <Input
                       id="messenger"
-                      value={messenger}
-                      onChange={(e) => setMessenger(e.target.value)}
+                      {...register('messenger')}
                       placeholder={t.checkout.contact.messengerPlaceholder}
-                      className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-white/30"
+                      className={inputClass}
                     />
                   </div>
                 </div>
@@ -191,7 +254,7 @@ export default function CheckoutPage() {
                     <Label>{t.checkout.delivery.country}</Label>
                     <Select
                       value={country}
-                      onValueChange={(v) => setCountry(v as Country)}
+                      onValueChange={(v) => handleCountryChange(v as Country)}
                     >
                       <SelectTrigger className="bg-white/5 border-white/10 text-white focus:border-white/30">
                         <SelectValue />
@@ -210,12 +273,11 @@ export default function CheckoutPage() {
                     <Label htmlFor="city">{t.checkout.delivery.city} *</Label>
                     <Input
                       id="city"
-                      value={city}
-                      onChange={(e) => setCity(e.target.value)}
+                      {...register('city')}
                       placeholder={t.checkout.delivery.cityPlaceholder}
-                      required
-                      className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-white/30"
+                      className={errors.city ? inputErrorClass : inputClass}
                     />
+                    <FieldError message={errors.city?.message} />
                   </div>
                   <div className="space-y-2 sm:col-span-2">
                     <Label htmlFor="address">
@@ -223,12 +285,11 @@ export default function CheckoutPage() {
                     </Label>
                     <Input
                       id="address"
-                      value={address}
-                      onChange={(e) => setAddress(e.target.value)}
+                      {...register('address')}
                       placeholder={t.checkout.delivery.addressPlaceholder}
-                      required
-                      className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-white/30"
+                      className={errors.address ? inputErrorClass : inputClass}
                     />
+                    <FieldError message={errors.address?.message} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="postalCode">
@@ -236,10 +297,9 @@ export default function CheckoutPage() {
                     </Label>
                     <Input
                       id="postalCode"
-                      value={postalCode}
-                      onChange={(e) => setPostalCode(e.target.value)}
+                      {...register('postalCode')}
                       placeholder={t.checkout.delivery.postalCodePlaceholder}
-                      className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-white/30"
+                      className={inputClass}
                     />
                   </div>
                   <div className="space-y-2">
@@ -291,81 +351,33 @@ export default function CheckoutPage() {
                 <h2 className="text-xl font-medium border-b border-white/10 pb-4">
                   {t.checkout.payment.title}
                 </h2>
-                <RadioGroup
-                  value={paymentMethod}
-                  onValueChange={(v) => setPaymentMethod(v as PaymentMethod)}
-                  className="space-y-3"
-                >
-                  {/* Kaspi Pay - Only for Kazakhstan */}
-                  {country === 'kz' && (
-                    <label
-                      htmlFor="kaspi"
-                      className={`flex items-start gap-4 p-4 rounded-lg border cursor-pointer transition-colors ${
-                        paymentMethod === 'kaspi'
-                          ? 'border-white bg-white/5'
-                          : 'border-white/10 hover:border-white/30'
-                      }`}
-                    >
-                      <RadioGroupItem value="kaspi" id="kaspi" className="mt-1" />
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">
-                            {t.checkout.payment.kaspi}
-                          </span>
-                          <span className="text-xs px-2 py-0.5 bg-[#F14635] text-white rounded">
-                            Kaspi
-                          </span>
-                        </div>
-                        <p className="text-sm text-white/50 mt-1">
-                          {t.checkout.payment.kaspiDescription}
-                        </p>
-                      </div>
-                    </label>
-                  )}
-
-                  {/* VTB Bank */}
-                  <label
-                    htmlFor="vtb"
-                    className={`flex items-start gap-4 p-4 rounded-lg border cursor-pointer transition-colors ${
-                      paymentMethod === 'vtb'
-                        ? 'border-white bg-white/5'
-                        : 'border-white/10 hover:border-white/30'
-                    }`}
-                  >
-                    <RadioGroupItem value="vtb" id="vtb" className="mt-1" />
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">
-                          {t.checkout.payment.vtb}
+                <div className="p-4 rounded-lg border border-white bg-white/5">
+                  {country === 'kz' ? (
+                    <div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-lg font-medium">{t.checkout.payment.kaspiTitle}</span>
+                        <span className="text-xs px-2 py-0.5 bg-[#F14635] text-white rounded">
+                          {t.checkout.payment.kaspiSubtitle}
                         </span>
+                      </div>
+                      <p className="text-sm text-white/50 mt-2">
+                        {t.checkout.payment.kaspiDescription}
+                      </p>
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-lg font-medium">{t.checkout.payment.vtbTitle}</span>
                         <span className="text-xs px-2 py-0.5 bg-[#009FDF] text-white rounded">
-                          VTB
+                          {t.checkout.payment.vtbSubtitle}
                         </span>
                       </div>
-                      <p className="text-sm text-white/50 mt-1">
+                      <p className="text-sm text-white/50 mt-2">
                         {t.checkout.payment.vtbDescription}
                       </p>
                     </div>
-                  </label>
-
-                  {/* Cash on Delivery */}
-                  <label
-                    htmlFor="cod"
-                    className={`flex items-start gap-4 p-4 rounded-lg border cursor-pointer transition-colors ${
-                      paymentMethod === 'cod'
-                        ? 'border-white bg-white/5'
-                        : 'border-white/10 hover:border-white/30'
-                    }`}
-                  >
-                    <RadioGroupItem value="cod" id="cod" className="mt-1" />
-                    <div className="flex-1">
-                      <span className="font-medium">{t.checkout.payment.cod}</span>
-                      <p className="text-sm text-white/50 mt-1">
-                        {t.checkout.payment.codDescription}
-                      </p>
-                    </div>
-                  </label>
-                </RadioGroup>
+                  )}
+                </div>
               </motion.section>
             </div>
 
@@ -381,14 +393,17 @@ export default function CheckoutPage() {
                   {t.checkout.summary.title}
                 </h2>
 
-                {/* Items */}
                 <div className="space-y-4">
                   {items.map((item) => (
                     <div key={item.size} className="flex gap-4">
-                      <div className="w-16 h-20 bg-neutral-800 flex-shrink-0 flex items-center justify-center">
-                        <span className="text-white/10 text-[8px] tracking-widest uppercase">
-                          IMG
-                        </span>
+                      <div className="w-16 h-20 relative flex-shrink-0 overflow-hidden">
+                        <Image
+                          src="/photos/photo11.png"
+                          alt={PRODUCT.name}
+                          fill
+                          className="object-cover"
+                          sizes="64px"
+                        />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="text-sm font-medium truncate">
@@ -448,14 +463,9 @@ export default function CheckoutPage() {
                   disabled={isSubmitting}
                   className="w-full bg-white text-black hover:bg-white/90 py-6 text-base font-medium disabled:opacity-50"
                 >
-                  {isSubmitting
-                    ? '...'
-                    : paymentMethod === 'cod'
-                      ? t.checkout.summary.submitCod
-                      : t.checkout.summary.submit}
+                  {isSubmitting ? '...' : t.checkout.summary.submit}
                 </Button>
 
-                {/* Trust badges */}
                 <div className="grid grid-cols-3 gap-2 pt-2">
                   <div className="flex flex-col items-center text-center gap-1">
                     <Shield className="h-4 w-4 text-white/40" />

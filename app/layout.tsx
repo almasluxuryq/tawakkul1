@@ -18,6 +18,7 @@ const playfair = Playfair_Display({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://twkklbrand.com'),
   title: 'ONE UMMAH ZIP HOODIE | Tawakkul',
   description: 'One religion · One purpose · One goal. Premium streetwear hoodie from Tawakkul. Double Layer Air Cotton, 350 GSM. Limited Edition 2025.',
   keywords: ['tawakkul', 'one ummah', 'hoodie', 'streetwear', 'islamic fashion', 'premium hoodie'],
@@ -28,11 +29,13 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'ru_RU',
     alternateLocale: ['en_US', 'kk_KZ'],
+    images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'ONE UMMAH ZIP HOODIE by Tawakkul' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'ONE UMMAH ZIP HOODIE | Tawakkul',
     description: 'One religion · One purpose · One goal. Premium streetwear hoodie from Tawakkul.',
+    images: ['/og-image.jpg'],
   },
   icons: {
     icon: [

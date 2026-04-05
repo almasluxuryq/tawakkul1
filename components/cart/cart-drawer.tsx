@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import Image from 'next/image'
 import { X, Minus, Plus, Trash2, ShoppingBag } from 'lucide-react'
 import { useI18n } from '@/lib/i18n/context'
 import { useCart, PRODUCT } from '@/lib/cart/context'
@@ -97,11 +98,14 @@ export function CartDrawer() {
                         key={item.size}
                         className="flex gap-4 p-3 bg-white/5 rounded-lg"
                       >
-                        {/* Image placeholder */}
-                        <div className="w-20 h-24 bg-neutral-800 flex-shrink-0 flex items-center justify-center">
-                          <span className="text-white/10 text-[8px] tracking-widest uppercase">
-                            IMG
-                          </span>
+                        <div className="w-20 h-24 relative flex-shrink-0 overflow-hidden">
+                          <Image
+                            src="/photos/photo11.png"
+                            alt={PRODUCT.name}
+                            fill
+                            className="object-cover"
+                            sizes="80px"
+                          />
                         </div>
 
                         {/* Details */}
@@ -119,6 +123,7 @@ export function CartDrawer() {
                               onClick={() =>
                                 updateQuantity(item.size, item.quantity - 1)
                               }
+                              aria-label={t.cart.decreaseQty}
                               className="w-7 h-7 border border-white/20 flex items-center justify-center rounded hover:border-white/40"
                             >
                               <Minus className="h-3 w-3" />
@@ -130,6 +135,7 @@ export function CartDrawer() {
                               onClick={() =>
                                 updateQuantity(item.size, item.quantity + 1)
                               }
+                              aria-label={t.cart.increaseQty}
                               className="w-7 h-7 border border-white/20 flex items-center justify-center rounded hover:border-white/40"
                             >
                               <Plus className="h-3 w-3" />
@@ -230,11 +236,14 @@ export function CartDrawer() {
                         key={item.size}
                         className="flex gap-4 p-4 bg-white/5 rounded-lg"
                       >
-                        {/* Image placeholder */}
-                        <div className="w-24 h-28 bg-neutral-800 flex-shrink-0 flex items-center justify-center">
-                          <span className="text-white/10 text-[10px] tracking-widest uppercase">
-                            IMG
-                          </span>
+                        <div className="w-24 h-28 relative flex-shrink-0 overflow-hidden">
+                          <Image
+                            src="/photos/photo11.png"
+                            alt={PRODUCT.name}
+                            fill
+                            className="object-cover"
+                            sizes="96px"
+                          />
                         </div>
 
                         {/* Details */}
@@ -250,6 +259,7 @@ export function CartDrawer() {
                               onClick={() =>
                                 updateQuantity(item.size, item.quantity - 1)
                               }
+                              aria-label={t.cart.decreaseQty}
                               className="w-8 h-8 border border-white/20 flex items-center justify-center hover:border-white/40 transition-colors"
                             >
                               <Minus className="h-4 w-4" />
@@ -261,6 +271,7 @@ export function CartDrawer() {
                               onClick={() =>
                                 updateQuantity(item.size, item.quantity + 1)
                               }
+                              aria-label={t.cart.increaseQty}
                               className="w-8 h-8 border border-white/20 flex items-center justify-center hover:border-white/40 transition-colors"
                             >
                               <Plus className="h-4 w-4" />

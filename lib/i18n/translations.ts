@@ -134,6 +134,9 @@ export const translations = {
       checkout: 'Оформить заказ',
       continueShopping: 'Продолжить покупки',
       remove: 'Удалить',
+      pieces: 'шт.',
+      decreaseQty: 'Уменьшить количество',
+      increaseQty: 'Увеличить количество',
     },
     // Size Chart
     sizeChart: {
@@ -180,12 +183,12 @@ export const translations = {
       },
       payment: {
         title: 'Оплата',
-        kaspi: 'Kaspi Pay',
+        kaspiTitle: 'Казахстан',
+        kaspiSubtitle: 'Kaspi',
         kaspiDescription: 'Оплата через приложение Kaspi',
-        vtb: 'VTB Банк',
-        vtbDescription: 'Оплата картой Visa/Mastercard',
-        cod: 'Оплата при получении',
-        codDescription: 'Наложенный платёж (+ комиссия)',
+        vtbTitle: 'Россия',
+        vtbSubtitle: 'VTB',
+        vtbDescription: 'Перевод на карту VTB',
       },
       summary: {
         title: 'Ваш заказ',
@@ -194,7 +197,6 @@ export const translations = {
         deliveryCalculating: 'Рассчитывается',
         total: 'Итого',
         submit: 'Оплатить',
-        submitCod: 'Подтвердить заказ',
       },
       trust: {
         secure: 'Безопасная оплата',
@@ -209,7 +211,13 @@ export const translations = {
       details: 'Детали заказа',
       trackOrder: 'Отследить заказ',
       whatsapp: 'Написать в WhatsApp',
+      telegram: 'Написать в Telegram',
       confirmation: 'На ваш телефон/email отправлено подтверждение',
+      paymentLink: 'Ссылка для оплаты',
+      payNow: 'Оплатить',
+      sendReceipt: 'После оплаты отправьте чек нам:',
+      vtbCard: 'Карта VTB',
+      vtbRecipient: 'Получатель',
     },
     // Track
     track: {
@@ -226,6 +234,16 @@ export const translations = {
       },
       trackingNumber: 'Трек-номер',
       deliveryAddress: 'Адрес доставки',
+    },
+    // Validation
+    validation: {
+      nameRequired: 'Введите имя',
+      nameMin: 'Имя слишком короткое',
+      phoneRequired: 'Введите номер телефона',
+      phoneInvalid: 'Неверный формат телефона',
+      emailInvalid: 'Неверный формат email',
+      cityRequired: 'Введите город',
+      addressRequired: 'Введите адрес',
     },
     // Common
     common: {
@@ -369,6 +387,9 @@ export const translations = {
       checkout: 'Тапсырыс беру',
       continueShopping: 'Сатып алуды жалғастыру',
       remove: 'Жою',
+      pieces: 'дана',
+      decreaseQty: 'Санын азайту',
+      increaseQty: 'Санын көбейту',
     },
     // Size Chart
     sizeChart: {
@@ -415,12 +436,12 @@ export const translations = {
       },
       payment: {
         title: 'Төлем',
-        kaspi: 'Kaspi Pay',
+        kaspiTitle: 'Қазақстан',
+        kaspiSubtitle: 'Kaspi',
         kaspiDescription: 'Kaspi қосымшасы арқылы төлем',
-        vtb: 'VTB Банк',
-        vtbDescription: 'Visa/Mastercard картасымен төлем',
-        cod: 'Алған кезде төлем',
-        codDescription: 'Алушы төлейтін жөнелтілім (+ комиссия)',
+        vtbTitle: 'Ресей',
+        vtbSubtitle: 'VTB',
+        vtbDescription: 'VTB картасына аудару',
       },
       summary: {
         title: 'Сіздің тапсырысыңыз',
@@ -429,7 +450,6 @@ export const translations = {
         deliveryCalculating: 'Есептелуде',
         total: 'Барлығы',
         submit: 'Төлеу',
-        submitCod: 'Тапсырысты растау',
       },
       trust: {
         secure: 'Қауіпсіз төлем',
@@ -444,7 +464,13 @@ export const translations = {
       details: 'Тапсырыс мәліметтері',
       trackOrder: 'Тапсырысты бақылау',
       whatsapp: 'WhatsApp-қа жазу',
+      telegram: 'Telegram-ға жазу',
       confirmation: 'Телефоныңызға/email-ге растау жіберілді',
+      paymentLink: 'Төлем сілтемесі',
+      payNow: 'Төлеу',
+      sendReceipt: 'Төлемнен кейін бізге чек жіберіңіз:',
+      vtbCard: 'VTB картасы',
+      vtbRecipient: 'Алушы',
     },
     // Track
     track: {
@@ -461,6 +487,16 @@ export const translations = {
       },
       trackingNumber: 'Трек-нөмір',
       deliveryAddress: 'Жеткізу мекенжайы',
+    },
+    // Validation
+    validation: {
+      nameRequired: 'Атыңызды енгізіңіз',
+      nameMin: 'Аты тым қысқа',
+      phoneRequired: 'Телефон нөмірін енгізіңіз',
+      phoneInvalid: 'Телефон форматы дұрыс емес',
+      emailInvalid: 'Email форматы дұрыс емес',
+      cityRequired: 'Қаланы енгізіңіз',
+      addressRequired: 'Мекенжайды енгізіңіз',
     },
     // Common
     common: {
@@ -604,6 +640,9 @@ export const translations = {
       checkout: 'Checkout',
       continueShopping: 'Continue Shopping',
       remove: 'Remove',
+      pieces: 'pcs',
+      decreaseQty: 'Decrease quantity',
+      increaseQty: 'Increase quantity',
     },
     // Size Chart
     sizeChart: {
@@ -650,12 +689,12 @@ export const translations = {
       },
       payment: {
         title: 'Payment',
-        kaspi: 'Kaspi Pay',
+        kaspiTitle: 'Kazakhstan',
+        kaspiSubtitle: 'Kaspi',
         kaspiDescription: 'Pay via Kaspi app',
-        vtb: 'VTB Bank',
-        vtbDescription: 'Pay with Visa/Mastercard',
-        cod: 'Cash on Delivery',
-        codDescription: 'Payment upon receipt (+ fee)',
+        vtbTitle: 'Russia',
+        vtbSubtitle: 'VTB',
+        vtbDescription: 'Transfer to VTB card',
       },
       summary: {
         title: 'Your Order',
@@ -664,7 +703,6 @@ export const translations = {
         deliveryCalculating: 'Calculating',
         total: 'Total',
         submit: 'Pay',
-        submitCod: 'Confirm Order',
       },
       trust: {
         secure: 'Secure Payment',
@@ -679,7 +717,13 @@ export const translations = {
       details: 'Order Details',
       trackOrder: 'Track Order',
       whatsapp: 'Contact via WhatsApp',
+      telegram: 'Contact via Telegram',
       confirmation: 'Confirmation sent to your phone/email',
+      paymentLink: 'Payment Link',
+      payNow: 'Pay Now',
+      sendReceipt: 'After payment, send us the receipt:',
+      vtbCard: 'VTB Card',
+      vtbRecipient: 'Recipient',
     },
     // Track
     track: {
@@ -697,6 +741,16 @@ export const translations = {
       trackingNumber: 'Tracking Number',
       deliveryAddress: 'Delivery Address',
     },
+    // Validation
+    validation: {
+      nameRequired: 'Please enter your name',
+      nameMin: 'Name is too short',
+      phoneRequired: 'Please enter your phone number',
+      phoneInvalid: 'Invalid phone format',
+      emailInvalid: 'Invalid email format',
+      cityRequired: 'Please enter your city',
+      addressRequired: 'Please enter your address',
+    },
     // Common
     common: {
       price: {
@@ -708,4 +762,14 @@ export const translations = {
   },
 } as const
 
-export type Translations = typeof translations.ru
+type DeepStringify<T> = {
+  [K in keyof T]: T[K] extends string
+    ? string
+    : T[K] extends readonly string[]
+      ? string[]
+      : T[K] extends object
+        ? DeepStringify<T[K]>
+        : T[K]
+}
+
+export type Translations = DeepStringify<typeof translations.ru>
