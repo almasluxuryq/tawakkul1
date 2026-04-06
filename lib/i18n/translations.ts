@@ -174,8 +174,8 @@ export const translations = {
         method: 'Способ доставки',
         cost: 'Стоимость доставки',
         costNote: 'Точная стоимость рассчитывается при подтверждении',
-        cdekWarning: 'Доставка СДЭК оплачивается отдельно при получении — 1 000 ₽',
-        kazpostWarning: 'Доставка КазПочтой оплачивается отдельно при получении — 1 000 ₽',
+        cdekWarning: 'Доставка СДЭК оплачивается отдельно при получении — 1 000 ₽ (5 500 ₸)',
+        kazpostWarning: 'Доставка КазПочтой оплачивается отдельно при получении — 300 ₽ (1 600 ₸)',
         estimatedTime: 'Ориентировочный срок: 5-10 рабочих дней',
         methods: {
           kazpost: 'КазПочта',
@@ -434,8 +434,8 @@ export const translations = {
         method: 'Жеткізу әдісі',
         cost: 'Жеткізу құны',
         costNote: 'Нақты құн растау кезінде есептеледі',
-        cdekWarning: 'СДЭК жеткізу қабылдау кезінде бөлек төленеді — 1 000 ₽',
-        kazpostWarning: 'ҚазПошта жеткізу қабылдау кезінде бөлек төленеді — 1 000 ₽',
+        cdekWarning: 'СДЭК жеткізу қабылдау кезінде бөлек төленеді — 1 000 ₽ (5 500 ₸)',
+        kazpostWarning: 'ҚазПошта жеткізу қабылдау кезінде бөлек төленеді — 300 ₽ (1 600 ₸)',
         estimatedTime: 'Болжамды мерзім: 5-10 жұмыс күні',
         methods: {
           kazpost: 'ҚазПошта',
@@ -694,8 +694,8 @@ export const translations = {
         method: 'Delivery Method',
         cost: 'Delivery Cost',
         costNote: 'Exact cost calculated upon confirmation',
-        cdekWarning: 'CDEK shipping is paid separately upon receipt — 1,000 ₽',
-        kazpostWarning: 'KazPost shipping is paid separately upon receipt — 1,000 ₽',
+        cdekWarning: 'CDEK shipping is paid separately upon receipt — 1,000 ₽ (5,500 ₸)',
+        kazpostWarning: 'KazPost shipping is paid separately upon receipt — 300 ₽ (1,600 ₸)',
         estimatedTime: 'Estimated delivery: 5-10 business days',
         methods: {
           kazpost: 'KazPost',
