@@ -15,7 +15,7 @@ const createOrderSchema = z.object({
   address: z.string().min(1),
   postalCode: z.string().optional(),
   deliveryMethod: z.string().min(1),
-  paymentMethod: z.enum(['KASPI', 'VTB', 'COD']),
+  paymentMethod: z.enum(['KASPI', 'VTB']),
   items: z.array(z.object({
     size: z.string(),
     quantity: z.number().int().positive(),
@@ -26,10 +26,26 @@ const createOrderSchema = z.object({
   totalRUB: z.number().int().positive(),
 })
 
-function generateOrderNumber(): string {
-  const date = new Date().toISOString().slice(0, 10).replace(/-/g, '')
-  const rand = Math.random().toString(36).substring(2, 6).toUpperCase()
-  return `OU-${date}-${rand}`
+async function generateOrderNumber(name: string): Promise<string> {
+  const cleanName = name
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-ZА-ЯЁ0-9]/g, '')
+    .slice(0, 15) || 'ORDER'
+
+  const now = new Date()
+  const date = `${String(now.getDate()).padStart(2, '0')}${String(now.getMonth() + 1).padStart(2, '0')}${now.getFullYear()}`
+
+  const todayCount = await prisma.order.count({
+    where: {
+      createdAt: {
+        gte: new Date(now.getFullYear(), now.getMonth(), now.getDate()),
+        lt: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1),
+      },
+    },
+  })
+
+  return `${cleanName}-${date}-${todayCount + 1}`
 }
 
 export async function POST(request: NextRequest) {
@@ -39,7 +55,7 @@ export async function POST(request: NextRequest) {
 
     const order = await prisma.order.create({
       data: {
-        orderNumber: generateOrderNumber(),
+        orderNumber: await generateOrderNumber(data.name),
         name: data.name,
         phone: data.phone,
         email: data.email || null,

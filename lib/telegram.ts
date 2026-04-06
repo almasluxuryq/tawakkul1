@@ -2,11 +2,33 @@ interface OrderWithItems {
   orderNumber: string
   name: string
   phone: string
+  email: string | null
+  messenger: string | null
+  country: string
   city: string
   address: string
+  postalCode: string | null
+  deliveryMethod: string
   paymentMethod: string
   totalKZT: number
+  totalRUB: number
   items: Array<{ size: string; quantity: number; priceKZT: number }>
+}
+
+const deliveryMethodNames: Record<string, string> = {
+  cdek: 'СДЭК',
+  kazpost: 'КазПочта',
+  pochta: 'Почта России',
+}
+
+const paymentMethodNames: Record<string, string> = {
+  KASPI: 'Kaspi',
+  VTB: 'VTB',
+}
+
+const countryNames: Record<string, string> = {
+  KZ: 'Казахстан',
+  RU: 'Россия',
 }
 
 export async function notifyNewOrder(order: OrderWithItems) {
@@ -19,20 +41,41 @@ export async function notifyNewOrder(order: OrderWithItems) {
     .map((i) => `  ${i.size} x${i.quantity} — ${i.priceKZT.toLocaleString('ru-RU')} ₸`)
     .join('\n')
 
-  const text = [
+  const lines = [
     `🛒 *Новый заказ!*`,
     ``,
     `📦 *${order.orderNumber}*`,
+    ``,
+    `*Клиент:*`,
     `👤 ${order.name}`,
     `📱 ${order.phone}`,
+  ]
+
+  if (order.email) lines.push(`📧 ${order.email}`)
+  if (order.messenger) lines.push(`💬 ${order.messenger}`)
+
+  lines.push(
+    ``,
+    `*Доставка:*`,
+    `🌍 ${countryNames[order.country] || order.country}`,
     `📍 ${order.city}, ${order.address}`,
-    `💳 ${order.paymentMethod}`,
+  )
+
+  if (order.postalCode) lines.push(`📮 Индекс: ${order.postalCode}`)
+
+  lines.push(
+    `🚚 ${deliveryMethodNames[order.deliveryMethod] || order.deliveryMethod}`,
+    ``,
+    `*Оплата:*`,
+    `💳 ${paymentMethodNames[order.paymentMethod] || order.paymentMethod}`,
     ``,
     `*Товары:*`,
     items,
     ``,
-    `*Итого: ${order.totalKZT.toLocaleString('ru-RU')} ₸*`,
-  ].join('\n')
+    `*Итого: ${order.totalKZT.toLocaleString('ru-RU')} ₸ / ${order.totalRUB.toLocaleString('ru-RU')} ₽*`,
+  )
+
+  const text = lines.join('\n')
 
   try {
     await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {

@@ -58,6 +58,12 @@ export function Footer() {
             >
               {t.footer.order}
             </a>
+            <Link
+              href="/track"
+              className="text-sm text-white/50 hover:text-white transition-colors"
+            >
+              {t.nav.track}
+            </Link>
           </div>
         </div>
 

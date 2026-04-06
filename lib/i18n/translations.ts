@@ -9,6 +9,7 @@ export const translations = {
       manifesto: 'Манифест',
       order: 'Заказать',
       cart: 'Корзина',
+      track: 'Отследить заказ',
     },
     // Hero
     hero: {
@@ -142,11 +143,10 @@ export const translations = {
     sizeChart: {
       title: 'Таблица размеров',
       size: 'Размер',
-      chest: 'Грудь (см)',
+      width: 'Ширина (см)',
       length: 'Длина (см)',
-      shoulders: 'Плечи (см)',
       sleeve: 'Рукав (см)',
-      note: 'Oversize силуэт — рекомендуем брать свой обычный размер',
+      note: 'Все замеры в сантиметрах (см). Oversize силуэт — рекомендуем брать свой обычный размер',
     },
     // Checkout
     checkout: {
@@ -174,6 +174,8 @@ export const translations = {
         method: 'Способ доставки',
         cost: 'Стоимость доставки',
         costNote: 'Точная стоимость рассчитывается при подтверждении',
+        cdekWarning: 'Доставка СДЭК оплачивается отдельно при получении — 1 000 ₽',
+        kazpostWarning: 'Доставка КазПочтой оплачивается отдельно при получении — 1 000 ₽',
         estimatedTime: 'Ориентировочный срок: 5-10 рабочих дней',
         methods: {
           kazpost: 'КазПочта',
@@ -213,8 +215,10 @@ export const translations = {
       whatsapp: 'Написать в WhatsApp',
       telegram: 'Написать в Telegram',
       confirmation: 'На ваш телефон/email отправлено подтверждение',
-      paymentLink: 'Ссылка для оплаты',
-      payNow: 'Оплатить',
+      paymentTitle: 'Оплатите заказ',
+      paymentDescription: 'Заказ оформлен. Оплатите его, чтобы мы начали обработку.',
+      payNow: 'Оплатить через Kaspi',
+      vtbTransfer: 'Переведите на карту VTB:',
       sendReceipt: 'После оплаты отправьте чек нам:',
       vtbCard: 'Карта VTB',
       vtbRecipient: 'Получатель',
@@ -234,6 +238,8 @@ export const translations = {
       },
       trackingNumber: 'Трек-номер',
       deliveryAddress: 'Адрес доставки',
+      myOrders: 'Мои заказы',
+      noOrders: 'У вас пока нет заказов',
     },
     // Validation
     validation: {
@@ -244,6 +250,7 @@ export const translations = {
       emailInvalid: 'Неверный формат email',
       cityRequired: 'Введите город',
       addressRequired: 'Введите адрес',
+      messengerRequired: 'Введите Telegram или WhatsApp',
     },
     // Common
     common: {
@@ -262,6 +269,7 @@ export const translations = {
       manifesto: 'Манифест',
       order: 'Тапсырыс беру',
       cart: 'Себет',
+      track: 'Тапсырысты бақылау',
     },
     // Hero
     hero: {
@@ -395,11 +403,10 @@ export const translations = {
     sizeChart: {
       title: 'Өлшемдер кестесі',
       size: 'Өлшем',
-      chest: 'Кеуде (см)',
+      width: 'Ені (см)',
       length: 'Ұзындық (см)',
-      shoulders: 'Иық (см)',
       sleeve: 'Жең (см)',
-      note: 'Oversize силуэт — әдеттегі өлшеміңізді алуды ұсынамыз',
+      note: 'Барлық өлшемдер сантиметрмен (см). Oversize силуэт — әдеттегі өлшеміңізді алуды ұсынамыз',
     },
     // Checkout
     checkout: {
@@ -427,6 +434,8 @@ export const translations = {
         method: 'Жеткізу әдісі',
         cost: 'Жеткізу құны',
         costNote: 'Нақты құн растау кезінде есептеледі',
+        cdekWarning: 'СДЭК жеткізу қабылдау кезінде бөлек төленеді — 1 000 ₽',
+        kazpostWarning: 'ҚазПошта жеткізу қабылдау кезінде бөлек төленеді — 1 000 ₽',
         estimatedTime: 'Болжамды мерзім: 5-10 жұмыс күні',
         methods: {
           kazpost: 'ҚазПошта',
@@ -466,8 +475,10 @@ export const translations = {
       whatsapp: 'WhatsApp-қа жазу',
       telegram: 'Telegram-ға жазу',
       confirmation: 'Телефоныңызға/email-ге растау жіберілді',
-      paymentLink: 'Төлем сілтемесі',
-      payNow: 'Төлеу',
+      paymentTitle: 'Тапсырысты төлеңіз',
+      paymentDescription: 'Тапсырыс рәсімделді. Өңдеуді бастау үшін төлеңіз.',
+      payNow: 'Kaspi арқылы төлеу',
+      vtbTransfer: 'VTB картасына аударыңыз:',
       sendReceipt: 'Төлемнен кейін бізге чек жіберіңіз:',
       vtbCard: 'VTB картасы',
       vtbRecipient: 'Алушы',
@@ -487,6 +498,8 @@ export const translations = {
       },
       trackingNumber: 'Трек-нөмір',
       deliveryAddress: 'Жеткізу мекенжайы',
+      myOrders: 'Менің тапсырыстарым',
+      noOrders: 'Сізде тапсырыстар жоқ',
     },
     // Validation
     validation: {
@@ -497,6 +510,7 @@ export const translations = {
       emailInvalid: 'Email форматы дұрыс емес',
       cityRequired: 'Қаланы енгізіңіз',
       addressRequired: 'Мекенжайды енгізіңіз',
+      messengerRequired: 'Telegram немесе WhatsApp енгізіңіз',
     },
     // Common
     common: {
@@ -515,6 +529,7 @@ export const translations = {
       manifesto: 'Manifesto',
       order: 'Order',
       cart: 'Cart',
+      track: 'Track Order',
     },
     // Hero
     hero: {
@@ -648,11 +663,10 @@ export const translations = {
     sizeChart: {
       title: 'Size Chart',
       size: 'Size',
-      chest: 'Chest (cm)',
+      width: 'Width (cm)',
       length: 'Length (cm)',
-      shoulders: 'Shoulders (cm)',
       sleeve: 'Sleeve (cm)',
-      note: 'Oversized fit — we recommend ordering your usual size',
+      note: 'All measurements in centimeters (cm). Oversized fit — we recommend ordering your usual size',
     },
     // Checkout
     checkout: {
@@ -680,6 +694,8 @@ export const translations = {
         method: 'Delivery Method',
         cost: 'Delivery Cost',
         costNote: 'Exact cost calculated upon confirmation',
+        cdekWarning: 'CDEK shipping is paid separately upon receipt — 1,000 ₽',
+        kazpostWarning: 'KazPost shipping is paid separately upon receipt — 1,000 ₽',
         estimatedTime: 'Estimated delivery: 5-10 business days',
         methods: {
           kazpost: 'KazPost',
@@ -719,8 +735,10 @@ export const translations = {
       whatsapp: 'Contact via WhatsApp',
       telegram: 'Contact via Telegram',
       confirmation: 'Confirmation sent to your phone/email',
-      paymentLink: 'Payment Link',
-      payNow: 'Pay Now',
+      paymentTitle: 'Pay for your order',
+      paymentDescription: 'Your order has been placed. Please pay to start processing.',
+      payNow: 'Pay via Kaspi',
+      vtbTransfer: 'Transfer to VTB card:',
       sendReceipt: 'After payment, send us the receipt:',
       vtbCard: 'VTB Card',
       vtbRecipient: 'Recipient',
@@ -740,6 +758,8 @@ export const translations = {
       },
       trackingNumber: 'Tracking Number',
       deliveryAddress: 'Delivery Address',
+      myOrders: 'My Orders',
+      noOrders: 'You have no orders yet',
     },
     // Validation
     validation: {
@@ -750,6 +770,7 @@ export const translations = {
       emailInvalid: 'Invalid email format',
       cityRequired: 'Please enter your city',
       addressRequired: 'Please enter your address',
+      messengerRequired: 'Please enter Telegram or WhatsApp',
     },
     // Common
     common: {

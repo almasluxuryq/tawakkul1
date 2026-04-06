@@ -18,10 +18,10 @@ import {
 } from '@/components/ui/table'
 
 const sizeData = [
-  { size: 'S', chest: 118, length: 70, shoulders: 55, sleeve: 62 },
-  { size: 'M', chest: 124, length: 72, shoulders: 57, sleeve: 64 },
-  { size: 'L', chest: 130, length: 74, shoulders: 59, sleeve: 66 },
-  { size: 'XL', chest: 136, length: 76, shoulders: 61, sleeve: 68 },
+  { size: 'S', width: 63, length: 71, sleeve: 60 },
+  { size: 'M', width: 64, length: 73, sleeve: 60 },
+  { size: 'L', width: 67, length: 74, sleeve: 61 },
+  { size: 'XL', width: 69, length: 75, sleeve: 61 },
 ]
 
 interface SizeChartModalProps {
@@ -52,13 +52,10 @@ export function SizeChartModal({ open, onOpenChange }: SizeChartModalProps) {
                   {t.sizeChart.size}
                 </TableHead>
                 <TableHead className="text-white/50 font-normal text-right">
-                  {t.sizeChart.chest}
+                  {t.sizeChart.width}
                 </TableHead>
                 <TableHead className="text-white/50 font-normal text-right">
                   {t.sizeChart.length}
-                </TableHead>
-                <TableHead className="text-white/50 font-normal text-right">
-                  {t.sizeChart.shoulders}
                 </TableHead>
                 <TableHead className="text-white/50 font-normal text-right">
                   {t.sizeChart.sleeve}
@@ -73,13 +70,10 @@ export function SizeChartModal({ open, onOpenChange }: SizeChartModalProps) {
                 >
                   <TableCell className="font-medium">{row.size}</TableCell>
                   <TableCell className="text-right text-white/70">
-                    {row.chest}
+                    {row.width}
                   </TableCell>
                   <TableCell className="text-right text-white/70">
                     {row.length}
-                  </TableCell>
-                  <TableCell className="text-right text-white/70">
-                    {row.shoulders}
                   </TableCell>
                   <TableCell className="text-right text-white/70">
                     {row.sleeve}

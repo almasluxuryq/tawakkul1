@@ -78,6 +78,12 @@ export function Header() {
                   {t.nav[link.key]}
                 </a>
               ))}
+              <Link
+                href="/track"
+                className="text-sm text-white/50 hover:text-white transition-colors duration-300"
+              >
+                {t.nav.track}
+              </Link>
             </nav>
 
             {/* Right Side */}
@@ -196,6 +202,19 @@ export function Header() {
                       {t.nav[link.key]}
                     </motion.a>
                   ))}
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: navLinks.length * 0.1 }}
+                  >
+                    <Link
+                      href="/track"
+                      onClick={handleNavClick}
+                      className="text-lg text-white/60 hover:text-white py-3 transition-colors duration-300 block"
+                    >
+                      {t.nav.track}
+                    </Link>
+                  </motion.div>
                 </nav>
                 <div className="p-5 border-t border-white/10">
                   <a href="#order" onClick={handleNavClick}>

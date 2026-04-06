@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Check, MessageCircle, ExternalLink, Send } from 'lucide-react'
+import { CreditCard, MessageCircle, ExternalLink, Send, Package } from 'lucide-react'
 import { useI18n } from '@/lib/i18n/context'
 import { PRODUCT } from '@/lib/cart/context'
 import { Button } from '@/components/ui/button'
@@ -39,176 +39,180 @@ export default function CheckoutSuccessPage() {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
-        className="max-w-lg w-full text-center py-12"
+        className="max-w-lg w-full py-12"
       >
-        {/* Checkmark Animation */}
+        {/* Payment Icon */}
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ duration: 0.5, delay: 0.2, type: 'spring' }}
-          className="w-20 h-20 mx-auto mb-8 rounded-full bg-white/10 flex items-center justify-center"
+          className="w-20 h-20 mx-auto mb-6 rounded-full bg-white/10 flex items-center justify-center"
         >
-          <motion.div
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-          >
-            <Check className="h-10 w-10 text-white" strokeWidth={2} />
-          </motion.div>
+          <CreditCard className="h-10 w-10 text-white" strokeWidth={1.5} />
         </motion.div>
 
-        {/* Title */}
-        <motion.h1
+        {/* Payment Title */}
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="text-2xl sm:text-3xl font-light mb-4"
+          className="text-center mb-8"
         >
-          {t.success.title}
-        </motion.h1>
+          <h1 className="text-2xl sm:text-3xl font-light mb-2">
+            {t.success.paymentTitle}
+          </h1>
+          <p className="text-sm text-white/50">
+            {t.success.paymentDescription}
+          </p>
+        </motion.div>
 
         {/* Order Number */}
         {order && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="mb-8"
+            transition={{ duration: 0.5, delay: 0.35 }}
+            className="text-center mb-6"
           >
-            <p className="text-sm text-white/50 mb-1">{t.success.orderNumber}</p>
-            <p className="text-xl font-mono tracking-wider">{order.orderNumber}</p>
+            <p className="text-xs text-white/40 mb-1">{t.success.orderNumber}</p>
+            <p className="text-lg font-mono tracking-wider">{order.orderNumber}</p>
           </motion.div>
         )}
 
-        {/* Order Details */}
+        {/* Payment Block — main focus */}
+        {order && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="bg-white/5 rounded-xl p-6 mb-6 border border-white/20"
+          >
+            {order.paymentMethod === 'kaspi' ? (
+              <>
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-xs px-2 py-0.5 bg-[#F14635] text-white rounded">Kaspi</span>
+                  <span className="text-sm text-white/50">
+                    {formatPrice(order.totalPriceKZT, t.common.price.kzt)}
+                  </span>
+                </div>
+                <a
+                  href="https://pay.kaspi.kz/pay/anpwu3nf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block"
+                >
+                  <Button className="w-full bg-white text-black hover:bg-white/90 py-6 text-base font-medium gap-2">
+                    <ExternalLink className="h-5 w-5" />
+                    {t.success.payNow}
+                  </Button>
+                </a>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-xs px-2 py-0.5 bg-[#009FDF] text-white rounded">VTB</span>
+                  <span className="text-sm text-white/50">
+                    {formatPrice(order.totalPriceKZT, t.common.price.kzt)}
+                  </span>
+                </div>
+                <p className="text-sm text-white/60 mb-3">{t.success.vtbTransfer}</p>
+                <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                  <p className="text-2xl font-mono tracking-wider mb-2">2204 3601 0035 7829</p>
+                  <p className="text-sm text-white/70">ALMAS NURBEKULY</p>
+                </div>
+              </>
+            )}
+
+            {/* Send receipt */}
+            <div className="border-t border-white/10 mt-5 pt-5">
+              <p className="text-sm text-white/50 mb-3">{t.success.sendReceipt}</p>
+              <div className="flex gap-3">
+                <a
+                  href="https://t.me/tawakkulgpt"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1"
+                >
+                  <Button
+                    variant="outline"
+                    className="w-full border-white/20 text-white hover:bg-white/10 py-4 gap-2"
+                  >
+                    <Send className="h-4 w-4" />
+                    Telegram
+                  </Button>
+                </a>
+                <a
+                  href="https://wa.me/77009570233"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1"
+                >
+                  <Button
+                    variant="outline"
+                    className="w-full border-white/20 text-white hover:bg-white/10 py-4 gap-2"
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                    WhatsApp
+                  </Button>
+                </a>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Order Details — secondary */}
         {order && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.5 }}
-            className="bg-white/5 rounded-lg p-6 mb-8 text-left"
+            className="bg-white/5 rounded-lg p-5 mb-6 text-left"
           >
-            <h3 className="text-sm text-white/50 mb-4">{t.success.details}</h3>
-            <div className="space-y-3 text-sm">
+            <div className="flex items-center gap-2 mb-3">
+              <Package className="h-4 w-4 text-white/40" />
+              <h3 className="text-sm text-white/50">{t.success.details}</h3>
+            </div>
+            <div className="space-y-2 text-sm">
               {order.items.map((item, index) => (
                 <div key={index} className="flex justify-between">
-                  <span>
+                  <span className="text-white/70">
                     {PRODUCT.name} ({item.size}) x{item.quantity}
                   </span>
                   <span>
-                    {formatPrice(
-                      item.quantity * PRODUCT.priceKZT,
-                      t.common.price.kzt
-                    )}
+                    {formatPrice(item.quantity * PRODUCT.priceKZT, t.common.price.kzt)}
                   </span>
                 </div>
               ))}
-              <div className="border-t border-white/10 pt-3 flex justify-between font-medium">
+              <div className="border-t border-white/10 pt-2 flex justify-between font-medium">
                 <span>{t.checkout.summary.total}</span>
-                <span>
-                  {formatPrice(order.totalPriceKZT, t.common.price.kzt)}
-                </span>
+                <span>{formatPrice(order.totalPriceKZT, t.common.price.kzt)}</span>
               </div>
             </div>
           </motion.div>
         )}
 
-        {/* Payment Link */}
-        {order && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.55 }}
-            className="bg-white/5 rounded-lg p-6 mb-6 border border-white/10"
-          >
-            <h3 className="text-sm text-white/50 mb-4">{t.success.paymentLink}</h3>
-            {order.paymentMethod === 'kaspi' ? (
-              <a
-                href="https://pay.kaspi.kz/pay/anpwu3nf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block"
-              >
-                <Button className="w-full bg-white text-black hover:bg-white/90 py-6 text-base font-medium gap-2">
-                  <ExternalLink className="h-5 w-5" />
-                  {t.success.payNow}
-                </Button>
-              </a>
-            ) : (
-              <div className="bg-white/5 rounded-lg p-4 border border-white/10">
-                <p className="text-xs text-white/50 mb-2">VTB</p>
-                <p className="text-lg font-mono tracking-wider mb-1">2204 3601 0035 7829</p>
-                <p className="text-sm text-white/70">ALMAS NURBEKULY</p>
-              </div>
-            )}
-
-            <p className="text-sm text-white/50 mt-5 mb-3">{t.success.sendReceipt}</p>
-            <div className="flex gap-3">
-              <a
-                href="https://t.me/tawakkulgpt"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1"
-              >
-                <Button
-                  variant="outline"
-                  className="w-full border-white/20 text-white hover:bg-white/10 py-4 gap-2"
-                >
-                  <Send className="h-4 w-4" />
-                  Telegram
-                </Button>
-              </a>
-              <a
-                href="https://wa.me/77009570233"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1"
-              >
-                <Button
-                  variant="outline"
-                  className="w-full border-white/20 text-white hover:bg-white/10 py-4 gap-2"
-                >
-                  <MessageCircle className="h-4 w-4" />
-                  WhatsApp
-                </Button>
-              </a>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Actions */}
+        {/* Track order */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.6 }}
-          className="space-y-4"
         >
           <Link href="/track" className="block">
             <Button
               variant="outline"
-              className="w-full border-white/30 text-white hover:bg-white hover:text-black py-6"
+              className="w-full border-white/30 text-white hover:bg-white hover:text-black py-5"
             >
               {t.success.trackOrder}
             </Button>
           </Link>
         </motion.div>
 
-        {/* Confirmation note */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.8 }}
-          className="text-xs text-white/40 mt-8"
-        >
-          {t.success.confirmation}
-        </motion.p>
-
         {/* Back to home */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 1 }}
-          className="mt-8"
+          transition={{ duration: 0.5, delay: 0.8 }}
+          className="mt-8 text-center"
         >
           <Link
             href="/"

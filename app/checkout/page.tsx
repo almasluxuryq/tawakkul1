@@ -5,12 +5,12 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Shield, Truck, RotateCcw } from 'lucide-react'
+import { ArrowLeft, Shield, Truck, RotateCcw, AlertTriangle, Minus, Plus, Trash2 } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useI18n } from '@/lib/i18n/context'
-import { useCart, PRODUCT } from '@/lib/cart/context'
+import { useCart, PRODUCT, Size } from '@/lib/cart/context'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 
 type Country = 'kz' | 'ru'
 type PaymentMethod = 'kaspi' | 'vtb'
@@ -39,7 +40,7 @@ function useCheckoutSchema() {
       (val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
       { message: '' }
     ),
-    messenger: z.string().optional(),
+    messenger: z.string().min(1, t.validation.messengerRequired),
     city: z.string().min(1, t.validation.cityRequired),
     address: z.string().min(1, t.validation.addressRequired),
     postalCode: z.string().optional(),
@@ -56,7 +57,8 @@ function FieldError({ message }: { message?: string }) {
 export default function CheckoutPage() {
   const { t } = useI18n()
   const router = useRouter()
-  const { items, totalPriceKZT, totalPriceUSD, totalPriceRUB, clearCart } = useCart()
+  const { items, totalPriceKZT, totalPriceUSD, totalPriceRUB, clearCart, updateQuantity, removeItem, addItem } = useCart()
+  const availableSizes: Size[] = ['S', 'M', 'L', 'XL']
 
   const schema = useCheckoutSchema()
   const {
@@ -87,10 +89,10 @@ export default function CheckoutPage() {
   }
 
   useEffect(() => {
-    if (items.length === 0) {
+    if (items.length === 0 && !isSubmitting) {
       router.push('/')
     }
-  }, [items, router])
+  }, [items, router, isSubmitting])
 
   const formatPrice = (price: number, currency: string) => {
     return new Intl.NumberFormat('ru-RU').format(price) + ' ' + currency
@@ -144,6 +146,11 @@ export default function CheckoutPage() {
           paymentMethod,
         })
       )
+
+      // Save order number to localStorage for tracking
+      const savedOrders = JSON.parse(localStorage.getItem('myOrders') || '[]')
+      savedOrders.unshift(orderNumber)
+      localStorage.setItem('myOrders', JSON.stringify(savedOrders))
 
       clearCart()
       router.push('/checkout/success')
@@ -227,14 +234,15 @@ export default function CheckoutPage() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="messenger">
-                      {t.checkout.contact.messenger}
+                      {t.checkout.contact.messenger} *
                     </Label>
                     <Input
                       id="messenger"
                       {...register('messenger')}
                       placeholder={t.checkout.contact.messengerPlaceholder}
-                      className={inputClass}
+                      className={errors.messenger ? inputErrorClass : inputClass}
                     />
+                    <FieldError message={errors.messenger?.message} />
                   </div>
                 </div>
               </motion.section>
@@ -339,6 +347,16 @@ export default function CheckoutPage() {
                     {t.checkout.delivery.estimatedTime}
                   </p>
                 </div>
+                {(deliveryMethod === 'cdek' || deliveryMethod === 'kazpost') && (
+                  <div className="flex items-start gap-3 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                    <AlertTriangle className="h-5 w-5 text-amber-400 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-amber-200 font-medium">
+                      {deliveryMethod === 'cdek'
+                        ? t.checkout.delivery.cdekWarning
+                        : t.checkout.delivery.kazpostWarning}
+                    </p>
+                  </div>
+                )}
               </motion.section>
 
               {/* Payment Section */}
@@ -351,33 +369,55 @@ export default function CheckoutPage() {
                 <h2 className="text-xl font-medium border-b border-white/10 pb-4">
                   {t.checkout.payment.title}
                 </h2>
-                <div className="p-4 rounded-lg border border-white bg-white/5">
-                  {country === 'kz' ? (
-                    <div>
+                <RadioGroup
+                  value={paymentMethod}
+                  onValueChange={(v) => setPaymentMethod(v as PaymentMethod)}
+                  className="space-y-3"
+                >
+                  <label
+                    htmlFor="kaspi"
+                    className={`flex items-start gap-4 p-4 rounded-lg border cursor-pointer transition-colors ${
+                      paymentMethod === 'kaspi'
+                        ? 'border-white bg-white/5'
+                        : 'border-white/10 hover:border-white/30'
+                    }`}
+                  >
+                    <RadioGroupItem value="kaspi" id="kaspi" className="mt-1" />
+                    <div className="flex-1">
                       <div className="flex items-center gap-3">
-                        <span className="text-lg font-medium">{t.checkout.payment.kaspiTitle}</span>
+                        <span className="font-medium">{t.checkout.payment.kaspiTitle}</span>
                         <span className="text-xs px-2 py-0.5 bg-[#F14635] text-white rounded">
                           {t.checkout.payment.kaspiSubtitle}
                         </span>
                       </div>
-                      <p className="text-sm text-white/50 mt-2">
+                      <p className="text-sm text-white/50 mt-1">
                         {t.checkout.payment.kaspiDescription}
                       </p>
                     </div>
-                  ) : (
-                    <div>
+                  </label>
+
+                  <label
+                    htmlFor="vtb"
+                    className={`flex items-start gap-4 p-4 rounded-lg border cursor-pointer transition-colors ${
+                      paymentMethod === 'vtb'
+                        ? 'border-white bg-white/5'
+                        : 'border-white/10 hover:border-white/30'
+                    }`}
+                  >
+                    <RadioGroupItem value="vtb" id="vtb" className="mt-1" />
+                    <div className="flex-1">
                       <div className="flex items-center gap-3">
-                        <span className="text-lg font-medium">{t.checkout.payment.vtbTitle}</span>
+                        <span className="font-medium">{t.checkout.payment.vtbTitle}</span>
                         <span className="text-xs px-2 py-0.5 bg-[#009FDF] text-white rounded">
                           {t.checkout.payment.vtbSubtitle}
                         </span>
                       </div>
-                      <p className="text-sm text-white/50 mt-2">
+                      <p className="text-sm text-white/50 mt-1">
                         {t.checkout.payment.vtbDescription}
                       </p>
                     </div>
-                  )}
-                </div>
+                  </label>
+                </RadioGroup>
               </motion.section>
             </div>
 
@@ -395,30 +435,81 @@ export default function CheckoutPage() {
 
                 <div className="space-y-4">
                   {items.map((item) => (
-                    <div key={item.size} className="flex gap-4">
-                      <div className="w-16 h-20 relative flex-shrink-0 overflow-hidden">
+                    <div key={item.size} className="flex gap-3 p-3 bg-white/5 rounded-lg">
+                      <div className="w-14 h-18 relative flex-shrink-0 overflow-hidden rounded">
                         <Image
                           src="/photos/photo11.png"
                           alt={PRODUCT.name}
                           fill
                           className="object-cover"
-                          sizes="64px"
+                          sizes="56px"
                         />
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-sm font-medium truncate">
-                          {PRODUCT.name}
-                        </h3>
-                        <p className="text-xs text-white/50 mt-1">
-                          {t.cart.size}: {item.size} · {t.cart.quantity}:{' '}
-                          {item.quantity}
-                        </p>
-                        <p className="text-sm mt-2">
-                          {formatPrice(
-                            item.quantity * PRODUCT.priceKZT,
-                            t.common.price.kzt
-                          )}
-                        </p>
+                      <div className="flex-1 min-w-0 space-y-2">
+                        <div className="flex items-start justify-between gap-2">
+                          <h3 className="text-sm font-medium truncate">
+                            {PRODUCT.name}
+                          </h3>
+                          <button
+                            type="button"
+                            onClick={() => removeItem(item.size)}
+                            className="text-white/30 hover:text-red-400 transition-colors flex-shrink-0"
+                            aria-label={t.cart.remove}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-white/50">{t.cart.size}:</span>
+                          <div className="flex gap-1">
+                            {availableSizes.map((size) => (
+                              <button
+                                key={size}
+                                type="button"
+                                onClick={() => {
+                                  if (size !== item.size) {
+                                    const qty = item.quantity
+                                    removeItem(item.size)
+                                    addItem(size, qty)
+                                  }
+                                }}
+                                className={`text-[10px] px-1.5 py-0.5 rounded border transition-colors ${
+                                  size === item.size
+                                    ? 'border-white bg-white text-black'
+                                    : 'border-white/20 text-white/50 hover:border-white/40'
+                                }`}
+                              >
+                                {size}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => updateQuantity(item.size, item.quantity - 1)}
+                              className="w-6 h-6 flex items-center justify-center rounded border border-white/20 text-white/50 hover:border-white/40 hover:text-white transition-colors"
+                              aria-label={t.cart.decreaseQty}
+                            >
+                              <Minus className="h-3 w-3" />
+                            </button>
+                            <span className="text-sm w-5 text-center">{item.quantity}</span>
+                            <button
+                              type="button"
+                              onClick={() => updateQuantity(item.size, item.quantity + 1)}
+                              className="w-6 h-6 flex items-center justify-center rounded border border-white/20 text-white/50 hover:border-white/40 hover:text-white transition-colors"
+                              aria-label={t.cart.increaseQty}
+                            >
+                              <Plus className="h-3 w-3" />
+                            </button>
+                          </div>
+                          <span className="text-sm font-medium">
+                            {formatPrice(item.quantity * PRODUCT.priceKZT, t.common.price.kzt)}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   ))}
