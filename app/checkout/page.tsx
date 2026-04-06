@@ -98,10 +98,10 @@ export default function CheckoutPage() {
     return new Intl.NumberFormat('ru-RU').format(price) + ' ' + currency
   }
 
-  const deliveryCosts: Record<string, { kzt: number; rub: number }> = {
-    cdek: { kzt: 5900, rub: 1000 },
-    kazpost: { kzt: 1600, rub: 300 },
-    pochta: { kzt: 5900, rub: 1000 },
+  const deliveryCosts: Record<string, { kzt: number; rub: number; usd: number }> = {
+    cdek: { kzt: 5900, rub: 1000, usd: 12 },
+    kazpost: { kzt: 1600, rub: 300, usd: 3 },
+    pochta: { kzt: 5900, rub: 1000, usd: 12 },
   }
   const costs = deliveryCosts[deliveryMethod] || deliveryCosts.cdek
   const estimatedDeliveryCost = country === 'kz' ? costs.kzt : costs.rub
@@ -353,13 +353,19 @@ export default function CheckoutPage() {
                     {t.checkout.delivery.estimatedTime}
                   </p>
                 </div>
-                {(deliveryMethod === 'cdek' || deliveryMethod === 'kazpost') && (
+                {deliveryMethod === 'cdek' && (
                   <div className="flex items-start gap-3 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
                     <AlertTriangle className="h-5 w-5 text-amber-400 flex-shrink-0 mt-0.5" />
                     <p className="text-sm text-amber-200 font-medium">
-                      {deliveryMethod === 'cdek'
-                        ? t.checkout.delivery.cdekWarning
-                        : t.checkout.delivery.kazpostWarning}
+                      {t.checkout.delivery.cdekWarning}
+                    </p>
+                  </div>
+                )}
+                {deliveryMethod === 'kazpost' && (
+                  <div className="flex items-start gap-3 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
+                    <Truck className="h-5 w-5 text-emerald-400 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-emerald-200 font-medium">
+                      {t.checkout.delivery.kazpostWarning}
                     </p>
                   </div>
                 )}
@@ -532,9 +538,13 @@ export default function CheckoutPage() {
                     <span className="text-white/70">
                       {t.checkout.summary.delivery}
                     </span>
-                    <span className="text-white/50">
-                      {t.checkout.summary.deliveryCalculating}
-                    </span>
+                    {deliveryMethod === 'kazpost' ? (
+                      <span>{formatPrice(costs.kzt, t.common.price.kzt)}</span>
+                    ) : (
+                      <span className="text-white/50">
+                        {t.checkout.summary.deliveryCalculating}
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -545,11 +555,20 @@ export default function CheckoutPage() {
                     </span>
                     <div className="text-right">
                       <span className="text-lg font-medium">
-                        {formatPrice(totalPriceKZT, t.common.price.kzt)}
+                        {formatPrice(
+                          totalPriceKZT + (deliveryMethod === 'kazpost' ? costs.kzt : 0),
+                          t.common.price.kzt
+                        )}
                       </span>
                       <p className="text-xs text-white/40">
-                        ({formatPrice(totalPriceUSD, t.common.price.usd)} /{' '}
-                        {formatPrice(totalPriceRUB, t.common.price.rub)})
+                        ({formatPrice(
+                          totalPriceUSD + (deliveryMethod === 'kazpost' ? costs.usd : 0),
+                          t.common.price.usd
+                        )} /{' '}
+                        {formatPrice(
+                          totalPriceRUB + (deliveryMethod === 'kazpost' ? costs.rub : 0),
+                          t.common.price.rub
+                        )})
                       </p>
                     </div>
                   </div>
