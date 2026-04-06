@@ -98,7 +98,13 @@ export default function CheckoutPage() {
     return new Intl.NumberFormat('ru-RU').format(price) + ' ' + currency
   }
 
-  const estimatedDeliveryCost = country === 'kz' ? 1600 : 1000
+  const deliveryCosts: Record<string, { kzt: number; rub: number }> = {
+    cdek: { kzt: 5900, rub: 1000 },
+    kazpost: { kzt: 1600, rub: 300 },
+    pochta: { kzt: 5900, rub: 1000 },
+  }
+  const costs = deliveryCosts[deliveryMethod] || deliveryCosts.cdek
+  const estimatedDeliveryCost = country === 'kz' ? costs.kzt : costs.rub
   const deliveryCurrency = country === 'kz' ? t.common.price.kzt : t.common.price.rub
 
   const onSubmit = async (data: CheckoutFormData) => {
