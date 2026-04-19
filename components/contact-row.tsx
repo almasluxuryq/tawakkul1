@@ -1,6 +1,6 @@
 'use client'
 
-import { Instagram, Send } from 'lucide-react'
+import { Megaphone, Send } from 'lucide-react'
 import { useI18n } from '@/lib/i18n/context'
 
 function WhatsAppIcon({ className }: { className?: string }) {
@@ -20,9 +20,9 @@ const contactLinks = [
   { href: 'https://wa.me/77009570233', label: 'WhatsApp', Icon: WhatsAppIcon },
   { href: 'https://t.me/tawakkulgpt', label: 'Telegram', Icon: Send },
   {
-    href: 'https://www.instagram.com/tawakkulTAWAKKUL/',
-    label: 'Instagram',
-    Icon: Instagram,
+    href: 'https://t.me/tawakkulbrand',
+    label: 'Telegram-канал',
+    Icon: Megaphone,
   },
 ]
 

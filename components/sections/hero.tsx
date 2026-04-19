@@ -3,7 +3,7 @@
 import { useRef } from 'react'
 import Image from 'next/image'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { ChevronDown, Instagram, Send, ArrowRight } from 'lucide-react'
+import { ChevronDown, Megaphone, Send, ArrowRight } from 'lucide-react'
 import { useI18n } from '@/lib/i18n/context'
 
 function WhatsAppIcon({ className }: { className?: string }) {
@@ -31,9 +31,9 @@ const heroLinks = [
     Icon: Send,
   },
   {
-    href: 'https://www.instagram.com/tawakkulTAWAKKUL/',
-    label: 'Instagram',
-    Icon: Instagram,
+    href: 'https://t.me/tawakkulbrand',
+    label: 'Telegram-канал',
+    Icon: Megaphone,
   },
 ]
 
