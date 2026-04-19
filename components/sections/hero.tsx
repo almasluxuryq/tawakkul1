@@ -79,7 +79,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.15 }}
-          className="relative mx-auto mb-6 h-32 w-80 sm:h-40 sm:w-[26rem]"
+          className="relative mx-auto mb-6 aspect-[2613/939] w-full max-w-[340px] sm:max-w-[340px]"
         >
           <Image
             src="/logo-twkkl.png"
@@ -87,7 +87,7 @@ export function HeroSection() {
             fill
             priority
             className="object-contain"
-            sizes="(min-width: 640px) 416px, 320px"
+            sizes="340px"
           />
         </motion.div>
 
