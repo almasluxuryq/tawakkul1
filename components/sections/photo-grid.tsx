@@ -9,11 +9,11 @@ import { Button } from '@/components/ui/button'
 
 const gridItems = [
   { id: 1, span: 'col-span-2 row-span-2', photo: '/photos/photo12.JPG' },
-  { id: 2, span: 'col-span-1 row-span-1', photo: '/photos/photo2.JPG' },
-  { id: 3, span: 'col-span-1 row-span-2', photo: '/photos/photo9.JPG' },
+  { id: 2, span: 'col-span-1 row-span-1', photo: '/photos/new2.jpg' },
+  { id: 3, span: 'col-span-1 row-span-2', photo: '/photos/new4.jpg' },
   { id: 4, span: 'col-span-1 row-span-1', photo: '/photos/photo15.JPG' },
-  { id: 5, span: 'col-span-2 row-span-1', photo: '/photos/photo3.JPEG' },
-  { id: 6, span: 'col-span-1 row-span-1', photo: '/photos/photo8.JPG' },
+  { id: 5, span: 'col-span-2 row-span-1', photo: '/photos/new9.jpg' },
+  { id: 6, span: 'col-span-1 row-span-1', photo: '/photos/new3.png' },
 ]
 
 export function PhotoGridSection() {

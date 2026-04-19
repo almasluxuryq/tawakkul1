@@ -21,7 +21,7 @@ export function FinalCtaSection() {
       {/* Background image */}
       <div className="absolute inset-0">
         <Image
-          src="/photos/photo3.JPEG"
+          src="/photos/new7.jpg"
           alt=""
           fill
           className="object-cover"

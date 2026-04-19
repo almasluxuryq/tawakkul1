@@ -6,15 +6,17 @@ import { motion, useInView } from 'framer-motion'
 import { useI18n } from '@/lib/i18n/context'
 
 const galleryPhotos = [
+  '/photos/new1.jpg',
   '/photos/photo1.jpg',
+  '/photos/new4.jpg',
   '/photos/photo13.JPG',
-  '/photos/photo9.JPG',
-  '/photos/photo3.JPEG',
+  '/photos/new5.jpg',
   '/photos/photo7.jpg',
+  '/photos/new6.jpg',
   '/photos/photo4.PNG',
+  '/photos/new7.jpg',
   '/photos/photo10.PNG',
-  '/photos/photo8.JPG',
-  '/photos/photo2.JPG',
+  '/photos/new8.jpg',
   '/photos/photo15.JPG',
 ]
 
@@ -23,12 +25,6 @@ export function GallerySection() {
   const ref = useRef<HTMLDivElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: '-50px' })
-
-  const galleryItems = t.gallery.captions.map((caption, index) => ({
-    id: index,
-    caption,
-    photo: galleryPhotos[index] || galleryPhotos[0],
-  }))
 
   return (
     <section id="gallery" ref={ref} className="section-light py-24 lg:py-32">
@@ -59,26 +55,23 @@ export function GallerySection() {
           ref={scrollRef}
           className="flex gap-4 overflow-x-auto hide-scrollbar px-4 sm:px-6 lg:px-8 pb-4"
         >
-          {galleryItems.map((item, index) => (
+          {galleryPhotos.map((photo, index) => (
             <motion.div
-              key={item.id}
+              key={photo}
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.1 * index, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.6, delay: 0.08 * index, ease: [0.16, 1, 0.3, 1] }}
               className="flex-shrink-0 group cursor-pointer"
             >
-              <div className="relative w-64 sm:w-72 lg:w-80 aspect-[3/4] overflow-hidden">
+              <div className="relative w-64 sm:w-72 lg:w-80 aspect-[3/4] overflow-hidden rounded-sm">
                 <Image
-                  src={item.photo}
-                  alt={item.caption}
+                  src={photo}
+                  alt=""
                   fill
                   className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                   sizes="320px"
                 />
               </div>
-              <p className="mt-3 text-sm text-neutral-400">
-                {item.caption}
-              </p>
             </motion.div>
           ))}
         </div>
