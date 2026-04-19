@@ -75,10 +75,26 @@ export function HeroSection() {
         style={{ opacity }}
         className="relative z-10 w-full px-5 max-w-[360px] mx-auto text-center"
       >
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, delay: 0.15 }}
+          className="relative mx-auto mb-5 h-24 w-56 sm:h-28 sm:w-64"
+        >
+          <Image
+            src="/logoo.PNG"
+            alt="Tawakkul"
+            fill
+            priority
+            className="object-contain"
+            sizes="256px"
+          />
+        </motion.div>
+
         <motion.p
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
           className="text-[10px] tracking-[0.3em] uppercase text-white/55 mb-3"
         >
           {t.hero.label}
@@ -87,7 +103,7 @@ export function HeroSection() {
         <motion.p
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.35 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
           className="text-sm sm:text-base text-white/70 mb-7 leading-relaxed"
         >
           {t.hero.subtitle}
