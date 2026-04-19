@@ -73,46 +73,46 @@ export function HeroSection() {
       {/* Content */}
       <motion.div
         style={{ opacity }}
-        className="relative z-10 w-full px-5 max-w-md mx-auto text-center"
+        className="relative z-10 w-full px-5 max-w-[360px] mx-auto text-center"
       >
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-[11px] tracking-[0.3em] uppercase text-white/60 mb-4"
+          className="text-[10px] tracking-[0.3em] uppercase text-white/55 mb-3"
         >
           {t.hero.label}
         </motion.p>
 
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.35 }}
-          className="text-base sm:text-lg text-white/75 mb-10 leading-relaxed"
+          className="text-sm sm:text-base text-white/70 mb-7 leading-relaxed"
         >
           {t.hero.subtitle}
         </motion.p>
 
         {/* Taplink-style messenger buttons */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
           {heroLinks.map(({ href, label, Icon }, i) => (
             <motion.a
               key={label}
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 + i * 0.1 }}
-              className="group flex items-center gap-4 px-5 py-4 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/25 text-white hover:bg-white hover:text-black hover:border-white transition-all duration-300 shadow-lg shadow-black/30"
+              transition={{ duration: 0.5, delay: 0.5 + i * 0.08 }}
+              className="group flex items-center gap-3 pl-3 pr-4 py-2.5 rounded-xl bg-white/[0.08] backdrop-blur-xl border border-white/20 text-white hover:bg-white hover:text-black hover:border-white transition-all duration-300"
             >
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 group-hover:bg-black/10 transition-colors">
-                <Icon className="h-5 w-5" />
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 group-hover:bg-black/10 transition-colors">
+                <Icon className="h-4 w-4" />
               </span>
-              <span className="flex-1 text-left text-base font-medium tracking-wide">
+              <span className="flex-1 text-left text-sm font-medium">
                 {label}
               </span>
-              <ArrowRight className="h-4 w-4 opacity-60 group-hover:translate-x-1 group-hover:opacity-100 transition-all" />
+              <ArrowRight className="h-3.5 w-3.5 opacity-50 group-hover:translate-x-0.5 group-hover:opacity-100 transition-all" />
             </motion.a>
           ))}
         </div>
@@ -122,32 +122,32 @@ export function HeroSection() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.9 }}
-          className="flex items-center gap-3 my-6"
+          className="flex items-center gap-3 my-4"
         >
-          <span className="h-px flex-1 bg-white/20" />
-          <span className="text-[10px] tracking-[0.25em] uppercase text-white/50">
+          <span className="h-px flex-1 bg-white/15" />
+          <span className="text-[9px] tracking-[0.25em] uppercase text-white/40">
             {t.hero.scroll}
           </span>
-          <span className="h-px flex-1 bg-white/20" />
+          <span className="h-px flex-1 bg-white/15" />
         </motion.div>
 
         {/* CTA — Смотреть и заказать */}
         <motion.a
           href="#order"
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1 }}
-          className="group flex items-center justify-center gap-3 px-5 py-4 rounded-2xl bg-white text-black hover:bg-white/90 transition-all duration-300 shadow-xl shadow-black/40"
+          transition={{ duration: 0.5, delay: 1 }}
+          className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white text-black hover:bg-white/90 transition-all duration-300 shadow-lg shadow-black/30"
         >
-          <span className="text-base font-semibold tracking-wide uppercase">
+          <span className="text-[13px] font-semibold tracking-[0.15em] uppercase">
             {t.hero.cta}
           </span>
           <motion.span
-            animate={{ y: [0, 4, 0] }}
+            animate={{ y: [0, 3, 0] }}
             transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
             className="flex"
           >
-            <ChevronDown className="h-5 w-5" />
+            <ChevronDown className="h-4 w-4" />
           </motion.span>
         </motion.a>
       </motion.div>
