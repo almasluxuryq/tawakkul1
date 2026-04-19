@@ -9,6 +9,7 @@ import { useI18n } from '@/lib/i18n/context'
 import { useCart, Size, PRODUCT } from '@/lib/cart/context'
 import { Button } from '@/components/ui/button'
 import { SizeChartModal } from '@/components/modals/size-chart-modal'
+import { ContactRow } from '@/components/contact-row'
 
 const sizes: Size[] = ['S', 'M', 'L', 'XL']
 
@@ -154,6 +155,10 @@ export function QuickOrderSection() {
                 >
                   {t.quickOrder.buyNow}
                 </Button>
+              </div>
+
+              <div className="pt-6">
+                <ContactRow tone="dark" />
               </div>
             </motion.div>
           </div>
