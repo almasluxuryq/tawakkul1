@@ -14,6 +14,7 @@ const gridItems = [
   { id: 4, span: 'col-span-1 row-span-1', photo: '/photos/photo15.JPG' },
   { id: 5, span: 'col-span-2 row-span-1', photo: '/photos/new9.jpg' },
   { id: 6, span: 'col-span-1 row-span-1', photo: '/photos/new3.png' },
+  { id: 7, span: 'col-span-1 row-span-1', photo: '/photos/new5.jpg' },
 ]
 
 export function PhotoGridSection() {
