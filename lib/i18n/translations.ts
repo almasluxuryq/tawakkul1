@@ -18,6 +18,7 @@ export const translations = {
       cta: 'Смотреть и заказать',
       scroll: 'Листайте',
       contactLabel: 'Или напишите нам напрямую',
+      tgChannel: 'Telegram-канал',
     },
     // Product Details
     product: {
@@ -279,6 +280,7 @@ export const translations = {
       cta: 'Қарау және тапсырыс беру',
       scroll: 'Айналдырыңыз',
       contactLabel: 'Немесе бізге тікелей жазыңыз',
+      tgChannel: 'Telegram-арна',
     },
     // Product Details
     product: {
@@ -540,6 +542,7 @@ export const translations = {
       cta: 'View and Order',
       scroll: 'Scroll',
       contactLabel: 'Or message us directly',
+      tgChannel: 'Telegram Channel',
     },
     // Product Details
     product: {

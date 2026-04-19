@@ -16,20 +16,20 @@ function WhatsAppIcon({ className }: { className?: string }) {
   )
 }
 
-const contactLinks = [
-  { href: 'https://wa.me/77009570233', label: 'WhatsApp', Icon: WhatsAppIcon },
-  { href: 'https://t.me/tawakkulgpt', label: 'Telegram', Icon: Send },
-  {
-    href: 'https://t.me/tawakkulbrand',
-    label: 'Telegram-канал',
-    Icon: Megaphone,
-  },
-]
-
 type Tone = 'light' | 'dark'
 
 export function ContactRow({ tone = 'light' }: { tone?: Tone }) {
   const { t } = useI18n()
+
+  const contactLinks = [
+    { href: 'https://wa.me/77009570233', label: 'WhatsApp', Icon: WhatsAppIcon },
+    { href: 'https://t.me/tawakkulgpt', label: 'Telegram', Icon: Send },
+    {
+      href: 'https://t.me/tawakkulbrand',
+      label: t.hero.tgChannel,
+      Icon: Megaphone,
+    },
+  ]
 
   const dividerColor = tone === 'light' ? 'bg-white/30' : 'bg-white/20'
   const labelColor = tone === 'light' ? 'text-white/70' : 'text-white/60'

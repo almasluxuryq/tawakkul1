@@ -19,26 +19,25 @@ function WhatsAppIcon({ className }: { className?: string }) {
   )
 }
 
-const heroLinks = [
-  {
-    href: 'https://wa.me/77009570233',
-    label: 'WhatsApp',
-    Icon: WhatsAppIcon,
-  },
-  {
-    href: 'https://t.me/tawakkulgpt',
-    label: 'Telegram',
-    Icon: Send,
-  },
-  {
-    href: 'https://t.me/tawakkulbrand',
-    label: 'Telegram-канал',
-    Icon: Megaphone,
-  },
-]
-
 export function HeroSection() {
   const { t } = useI18n()
+  const heroLinks = [
+    {
+      href: 'https://wa.me/77009570233',
+      label: 'WhatsApp',
+      Icon: WhatsAppIcon,
+    },
+    {
+      href: 'https://t.me/tawakkulgpt',
+      label: 'Telegram',
+      Icon: Send,
+    },
+    {
+      href: 'https://t.me/tawakkulbrand',
+      label: t.hero.tgChannel,
+      Icon: Megaphone,
+    },
+  ]
   const ref = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
     target: ref,
