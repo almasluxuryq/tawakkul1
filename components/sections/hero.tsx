@@ -79,15 +79,15 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.15 }}
-          className="relative mx-auto mb-5 h-24 w-56 sm:h-28 sm:w-64"
+          className="relative mx-auto mb-6 h-32 w-72 sm:h-40 sm:w-96"
         >
           <Image
             src="/logoo.PNG"
             alt="Tawakkul"
             fill
             priority
-            className="object-contain"
-            sizes="256px"
+            className="object-contain mix-blend-screen"
+            sizes="(min-width: 640px) 384px, 288px"
           />
         </motion.div>
 
