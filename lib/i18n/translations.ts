@@ -17,6 +17,7 @@ export const translations = {
       subtitle: 'Одна вера. Одна община. Без границ.',
       cta: 'Смотреть и заказать',
       scroll: 'Листайте',
+      contactLabel: 'Или напишите нам напрямую',
     },
     // Product Details
     product: {
@@ -277,6 +278,7 @@ export const translations = {
       subtitle: 'Бір дін. Бір қауым. Шекарасыз.',
       cta: 'Қарау және тапсырыс беру',
       scroll: 'Айналдырыңыз',
+      contactLabel: 'Немесе бізге тікелей жазыңыз',
     },
     // Product Details
     product: {
@@ -537,6 +539,7 @@ export const translations = {
       subtitle: 'One faith. One community. No borders.',
       cta: 'View and Order',
       scroll: 'Scroll',
+      contactLabel: 'Or message us directly',
     },
     // Product Details
     product: {
