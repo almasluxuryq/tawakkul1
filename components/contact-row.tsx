@@ -32,12 +32,12 @@ type Tone = 'light' | 'dark'
 export function ContactRow({ tone = 'light' }: { tone?: Tone }) {
   const { t } = useI18n()
 
-  const dividerColor = tone === 'light' ? 'bg-white/15' : 'bg-white/10'
-  const labelColor = tone === 'light' ? 'text-white/40' : 'text-white/50'
+  const dividerColor = tone === 'light' ? 'bg-white/30' : 'bg-white/20'
+  const labelColor = tone === 'light' ? 'text-white/70' : 'text-white/60'
   const iconBtn =
     tone === 'light'
-      ? 'border-white/20 text-white/70 hover:text-black hover:bg-white hover:border-white'
-      : 'border-white/15 text-white/60 hover:text-black hover:bg-white hover:border-white'
+      ? 'bg-white/15 backdrop-blur-md border-white/40 text-white hover:bg-white hover:text-black hover:border-white'
+      : 'bg-white/10 border-white/30 text-white hover:bg-white hover:text-black hover:border-white'
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -58,9 +58,9 @@ export function ContactRow({ tone = 'light' }: { tone?: Tone }) {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={label}
-            className={`flex h-11 w-11 items-center justify-center rounded-full border transition-all duration-300 ${iconBtn}`}
+            className={`flex h-12 w-12 items-center justify-center rounded-full border transition-all duration-300 shadow-lg shadow-black/20 ${iconBtn}`}
           >
-            <Icon className="h-4 w-4" />
+            <Icon className="h-5 w-5" />
           </a>
         ))}
       </div>
