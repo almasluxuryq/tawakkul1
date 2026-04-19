@@ -27,8 +27,15 @@ const contactLinks = [
 ]
 
 type Tone = 'light' | 'dark'
+type Size = 'default' | 'hero'
 
-export function ContactRow({ tone = 'light' }: { tone?: Tone }) {
+export function ContactRow({
+  tone = 'light',
+  size = 'default',
+}: {
+  tone?: Tone
+  size?: Size
+}) {
   const { t } = useI18n()
 
   const dividerColor = tone === 'light' ? 'bg-white/30' : 'bg-white/20'
@@ -38,18 +45,32 @@ export function ContactRow({ tone = 'light' }: { tone?: Tone }) {
       ? 'bg-white/15 backdrop-blur-md border-white/40 text-white hover:bg-white hover:text-black hover:border-white'
       : 'bg-white/10 border-white/30 text-white hover:bg-white hover:text-black hover:border-white'
 
+  const btnSize =
+    size === 'hero'
+      ? 'h-20 w-20 sm:h-24 sm:w-24'
+      : 'h-12 w-12'
+  const iconSize =
+    size === 'hero' ? 'h-9 w-9 sm:h-11 sm:w-11' : 'h-5 w-5'
+  const gap = size === 'hero' ? 'gap-5 sm:gap-6' : 'gap-3'
+  const labelSize =
+    size === 'hero'
+      ? 'text-xs sm:text-sm tracking-[0.3em]'
+      : 'text-[10px] tracking-[0.25em]'
+  const wrapperGap = size === 'hero' ? 'gap-7' : 'gap-4'
+  const dividerMax = size === 'hero' ? 'max-w-md' : 'max-w-xs'
+
   return (
-    <div className="flex flex-col items-center gap-4">
-      <div className="flex items-center gap-4 w-full max-w-xs">
+    <div className={`flex flex-col items-center ${wrapperGap}`}>
+      <div className={`flex items-center gap-4 w-full ${dividerMax}`}>
         <span className={`h-px flex-1 ${dividerColor}`} />
         <span
-          className={`text-[10px] tracking-[0.25em] uppercase whitespace-nowrap ${labelColor}`}
+          className={`uppercase whitespace-nowrap ${labelSize} ${labelColor}`}
         >
           {t.hero.contactLabel}
         </span>
         <span className={`h-px flex-1 ${dividerColor}`} />
       </div>
-      <div className="flex items-center gap-3">
+      <div className={`flex items-center ${gap}`}>
         {contactLinks.map(({ href, label, Icon }) => (
           <a
             key={label}
@@ -57,9 +78,9 @@ export function ContactRow({ tone = 'light' }: { tone?: Tone }) {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={label}
-            className={`flex h-12 w-12 items-center justify-center rounded-full border transition-all duration-300 shadow-lg shadow-black/20 ${iconBtn}`}
+            className={`flex items-center justify-center rounded-full border transition-all duration-300 shadow-lg shadow-black/20 ${btnSize} ${iconBtn}`}
           >
-            <Icon className="h-5 w-5" />
+            <Icon className={iconSize} />
           </a>
         ))}
       </div>

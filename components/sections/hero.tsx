@@ -55,15 +55,14 @@ export function HeroSection() {
           {t.hero.label}
         </motion.p>
 
-        <motion.h1
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-6xl sm:text-8xl lg:text-9xl font-light tracking-tight leading-none mb-8"
+          className="mb-10"
         >
-          <span className="block">ONE</span>
-          <span className="block font-serif italic text-[#E8E4DF]">UMMAH</span>
-        </motion.h1>
+          <ContactRow tone="light" size="hero" />
+        </motion.div>
 
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -88,15 +87,6 @@ export function HeroSection() {
               {t.hero.cta}
             </Button>
           </a>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1 }}
-          className="mt-10"
-        >
-          <ContactRow tone="light" />
         </motion.div>
       </motion.div>
 
