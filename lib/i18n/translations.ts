@@ -155,8 +155,8 @@ export const translations = {
       title: 'Оформление заказа',
       contact: {
         title: 'Контактные данные',
-        name: 'Имя',
-        namePlaceholder: 'Ваше имя',
+        name: 'ФИО',
+        namePlaceholder: 'Фамилия Имя Отчество',
         phone: 'Телефон',
         phonePlaceholder: '+7 (___) ___-__-__',
         email: 'Email (необязательно)',
@@ -245,8 +245,8 @@ export const translations = {
     },
     // Validation
     validation: {
-      nameRequired: 'Введите имя',
-      nameMin: 'Имя слишком короткое',
+      nameRequired: 'Введите ФИО',
+      nameMin: 'ФИО слишком короткое',
       phoneRequired: 'Введите номер телефона',
       phoneInvalid: 'Неверный формат телефона',
       emailInvalid: 'Неверный формат email',
@@ -417,8 +417,8 @@ export const translations = {
       title: 'Тапсырысты рәсімдеу',
       contact: {
         title: 'Байланыс деректері',
-        name: 'Аты',
-        namePlaceholder: 'Сіздің атыңыз',
+        name: 'Аты-жөні',
+        namePlaceholder: 'Тегі Аты Әкесінің аты',
         phone: 'Телефон',
         phonePlaceholder: '+7 (___) ___-__-__',
         email: 'Email (міндетті емес)',
@@ -507,8 +507,8 @@ export const translations = {
     },
     // Validation
     validation: {
-      nameRequired: 'Атыңызды енгізіңіз',
-      nameMin: 'Аты тым қысқа',
+      nameRequired: 'Аты-жөніңізді енгізіңіз',
+      nameMin: 'Аты-жөні тым қысқа',
       phoneRequired: 'Телефон нөмірін енгізіңіз',
       phoneInvalid: 'Телефон форматы дұрыс емес',
       emailInvalid: 'Email форматы дұрыс емес',
@@ -679,8 +679,8 @@ export const translations = {
       title: 'Checkout',
       contact: {
         title: 'Contact Information',
-        name: 'Name',
-        namePlaceholder: 'Your name',
+        name: 'Full name',
+        namePlaceholder: 'Surname First name Patronymic',
         phone: 'Phone',
         phonePlaceholder: '+7 (___) ___-__-__',
         email: 'Email (optional)',
@@ -769,8 +769,8 @@ export const translations = {
     },
     // Validation
     validation: {
-      nameRequired: 'Please enter your name',
-      nameMin: 'Name is too short',
+      nameRequired: 'Please enter your full name',
+      nameMin: 'Full name is too short',
       phoneRequired: 'Please enter your phone number',
       phoneInvalid: 'Invalid phone format',
       emailInvalid: 'Invalid email format',
