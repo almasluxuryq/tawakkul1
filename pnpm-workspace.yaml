@@ -1,0 +1,7 @@
+# pnpm v10+ reads build-script approvals from here (no longer the package.json "pnpm" field).
+# Lets these packages run their install/build scripts (Prisma engines, native sharp binaries).
+onlyBuiltDependencies:
+  - '@prisma/client'
+  - '@prisma/engines'
+  - prisma
+  - sharp

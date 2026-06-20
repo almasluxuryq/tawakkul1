@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
 interface OrderItem {
+  productId: string
+  productName: string
   size: string
   quantity: number
   priceKZT: number
@@ -256,7 +258,7 @@ export default function AdminPage() {
                       <div className="space-y-1">
                         {order.items.map((item, i) => (
                           <p key={i} className="text-sm">
-                            ONE UMMAH ZIP HOODIE — {item.size} x{item.quantity} — {formatPrice(item.priceKZT)}
+                            {item.productName} — {item.size} x{item.quantity} — {formatPrice(item.priceKZT)}
                           </p>
                         ))}
                       </div>

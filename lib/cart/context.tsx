@@ -1,36 +1,22 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { PRODUCTS, ProductId, Size, isProductId } from './products'
 
-export type Size = 'S' | 'M' | 'L' | 'XL'
+export type { Size, ProductId, Product } from './products'
+export { PRODUCTS, PRODUCT_LIST, getProduct, getProductBySlug } from './products'
 
 export interface CartItem {
-  id: string
+  productId: ProductId
   size: Size
   quantity: number
 }
 
-export interface Product {
-  id: string
-  name: string
-  priceKZT: number
-  priceUSD: number
-  priceRUB: number
-}
-
-export const PRODUCT: Product = {
-  id: 'one-ummah-zip-hoodie',
-  name: 'ONE UMMAH ZIP HOODIE',
-  priceKZT: 23990,
-  priceUSD: 49,
-  priceRUB: 3990,
-}
-
 interface CartContextType {
   items: CartItem[]
-  addItem: (size: Size, quantity?: number) => void
-  removeItem: (size: Size) => void
-  updateQuantity: (size: Size, quantity: number) => void
+  addItem: (productId: ProductId, size: Size, quantity?: number) => void
+  removeItem: (productId: ProductId, size: Size) => void
+  updateQuantity: (productId: ProductId, size: Size, quantity: number) => void
   clearCart: () => void
   totalItems: number
   totalPriceKZT: number
@@ -44,6 +30,25 @@ const CartContext = createContext<CartContextType | undefined>(undefined)
 
 const STORAGE_KEY = 'tawakkul-cart'
 
+// Normalizes stored items, including the legacy single-product shape `{ id, size, quantity }`.
+function normalizeStoredItems(raw: unknown): CartItem[] {
+  if (!Array.isArray(raw)) return []
+  const result: CartItem[] = []
+  for (const entry of raw) {
+    if (!entry || typeof entry !== 'object') continue
+    const e = entry as Record<string, unknown>
+    const productId = (e.productId ?? e.id) as string | undefined
+    if (typeof productId !== 'string' || !isProductId(productId)) continue
+    if (typeof e.size !== 'string') continue
+    const quantity = typeof e.quantity === 'number' && e.quantity > 0 ? e.quantity : 1
+    result.push({ productId, size: e.size as Size, quantity })
+  }
+  return result
+}
+
+const sameLine = (item: CartItem, productId: ProductId, size: Size) =>
+  item.productId === productId && item.size === size
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
   const [isCartOpen, setIsCartOpen] = useState(false)
@@ -53,7 +58,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const stored = localStorage.getItem(STORAGE_KEY)
     if (stored) {
       try {
-        setItems(JSON.parse(stored))
+        setItems(normalizeStoredItems(JSON.parse(stored)))
       } catch {
         // Invalid JSON, ignore
       }
@@ -67,31 +72,33 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [items, isHydrated])
 
-  const addItem = (size: Size, quantity = 1) => {
+  const addItem = (productId: ProductId, size: Size, quantity = 1) => {
     setItems((prev) => {
-      const existing = prev.find((item) => item.size === size)
+      const existing = prev.find((item) => sameLine(item, productId, size))
       if (existing) {
         return prev.map((item) =>
-          item.size === size
+          sameLine(item, productId, size)
             ? { ...item, quantity: item.quantity + quantity }
             : item
         )
       }
-      return [...prev, { id: PRODUCT.id, size, quantity }]
+      return [...prev, { productId, size, quantity }]
     })
   }
 
-  const removeItem = (size: Size) => {
-    setItems((prev) => prev.filter((item) => item.size !== size))
+  const removeItem = (productId: ProductId, size: Size) => {
+    setItems((prev) => prev.filter((item) => !sameLine(item, productId, size)))
   }
 
-  const updateQuantity = (size: Size, quantity: number) => {
+  const updateQuantity = (productId: ProductId, size: Size, quantity: number) => {
     if (quantity <= 0) {
-      removeItem(size)
+      removeItem(productId, size)
       return
     }
     setItems((prev) =>
-      prev.map((item) => (item.size === size ? { ...item, quantity } : item))
+      prev.map((item) =>
+        sameLine(item, productId, size) ? { ...item, quantity } : item
+      )
     )
   }
 
@@ -100,18 +107,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0)
-  const totalPriceKZT = items.reduce(
-    (sum, item) => sum + item.quantity * PRODUCT.priceKZT,
-    0
-  )
-  const totalPriceUSD = items.reduce(
-    (sum, item) => sum + item.quantity * PRODUCT.priceUSD,
-    0
-  )
-  const totalPriceRUB = items.reduce(
-    (sum, item) => sum + item.quantity * PRODUCT.priceRUB,
-    0
-  )
+  const sumBy = (key: 'priceKZT' | 'priceUSD' | 'priceRUB') =>
+    items.reduce((sum, item) => sum + item.quantity * PRODUCTS[item.productId][key], 0)
+  const totalPriceKZT = sumBy('priceKZT')
+  const totalPriceUSD = sumBy('priceUSD')
+  const totalPriceRUB = sumBy('priceRUB')
 
   return (
     <CartContext.Provider

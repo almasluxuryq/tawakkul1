@@ -17,6 +17,8 @@ const createOrderSchema = z.object({
   deliveryMethod: z.string().min(1),
   paymentMethod: z.enum(['KASPI', 'VTB']),
   items: z.array(z.object({
+    productId: z.string().min(1),
+    productName: z.string().min(1),
     size: z.string(),
     quantity: z.number().int().positive(),
     priceKZT: z.number().int().positive(),
@@ -71,6 +73,8 @@ export async function POST(request: NextRequest) {
         totalRUB: data.totalRUB,
         items: {
           create: data.items.map((item) => ({
+            productId: item.productId,
+            productName: item.productName,
             size: item.size,
             quantity: item.quantity,
             priceKZT: item.priceKZT,

@@ -12,7 +12,7 @@ interface OrderWithItems {
   paymentMethod: string
   totalKZT: number
   totalRUB: number
-  items: Array<{ size: string; quantity: number; priceKZT: number }>
+  items: Array<{ productName: string; size: string; quantity: number; priceKZT: number }>
 }
 
 const deliveryMethodNames: Record<string, string> = {
@@ -38,7 +38,7 @@ export async function notifyNewOrder(order: OrderWithItems) {
   if (!botToken || !chatId) return
 
   const items = order.items
-    .map((i) => `  ${i.size} x${i.quantity} — ${i.priceKZT.toLocaleString('ru-RU')} ₸`)
+    .map((i) => `  ${i.productName} · ${i.size} x${i.quantity} — ${i.priceKZT.toLocaleString('ru-RU')} ₸`)
     .join('\n')
 
   const lines = [

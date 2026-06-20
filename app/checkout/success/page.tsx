@@ -5,12 +5,12 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { CreditCard, MessageCircle, ExternalLink, Send, Package } from 'lucide-react'
 import { useI18n } from '@/lib/i18n/context'
-import { PRODUCT } from '@/lib/cart/context'
+import { PRODUCTS, ProductId } from '@/lib/cart/context'
 import { Button } from '@/components/ui/button'
 
 interface OrderData {
   orderNumber: string
-  items: Array<{ size: string; quantity: number }>
+  items: Array<{ productId: ProductId; size: string; quantity: number }>
   totalPriceKZT: number
   name: string
   phone: string
@@ -173,16 +173,19 @@ export default function CheckoutSuccessPage() {
               <h3 className="text-sm text-white/50">{t.success.details}</h3>
             </div>
             <div className="space-y-2 text-sm">
-              {order.items.map((item, index) => (
+              {order.items.map((item, index) => {
+                const product = PRODUCTS[item.productId]
+                return (
                 <div key={index} className="flex justify-between">
                   <span className="text-white/70">
-                    {PRODUCT.name} ({item.size}) x{item.quantity}
+                    {product.name} ({item.size}) x{item.quantity}
                   </span>
                   <span>
-                    {formatPrice(item.quantity * PRODUCT.priceKZT, t.common.price.kzt)}
+                    {formatPrice(item.quantity * product.priceKZT, t.common.price.kzt)}
                   </span>
                 </div>
-              ))}
+                )
+              })}
               <div className="border-t border-white/10 pt-2 flex justify-between font-medium">
                 <span>{t.checkout.summary.total}</span>
                 <span>{formatPrice(order.totalPriceKZT, t.common.price.kzt)}</span>

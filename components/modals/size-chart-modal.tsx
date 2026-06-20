@@ -18,10 +18,10 @@ import {
 } from '@/components/ui/table'
 
 const sizeData = [
-  { size: 'S', width: 63, length: 71, sleeve: 60 },
-  { size: 'M', width: 64, length: 73, sleeve: 60 },
-  { size: 'L', width: 67, length: 74, sleeve: 61 },
-  { size: 'XL', width: 69, length: 75, sleeve: 61 },
+  { size: 'S', height: '165–172', weight: '55–68' },
+  { size: 'M', height: '172–180', weight: '65–78' },
+  { size: 'L', height: '180–188', weight: '75–90' },
+  { size: 'XL', height: '188–196', weight: '88–110' },
 ]
 
 interface SizeChartModalProps {
@@ -57,9 +57,6 @@ export function SizeChartModal({ open, onOpenChange }: SizeChartModalProps) {
                 <TableHead className="text-white/50 font-normal text-right">
                   {t.sizeChart.length}
                 </TableHead>
-                <TableHead className="text-white/50 font-normal text-right">
-                  {t.sizeChart.sleeve}
-                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -70,13 +67,10 @@ export function SizeChartModal({ open, onOpenChange }: SizeChartModalProps) {
                 >
                   <TableCell className="font-medium">{row.size}</TableCell>
                   <TableCell className="text-right text-white/70">
-                    {row.width}
+                    {row.height}
                   </TableCell>
                   <TableCell className="text-right text-white/70">
-                    {row.length}
-                  </TableCell>
-                  <TableCell className="text-right text-white/70">
-                    {row.sleeve}
+                    {row.weight}
                   </TableCell>
                 </TableRow>
               ))}

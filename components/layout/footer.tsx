@@ -53,7 +53,7 @@ export function Footer() {
               <Instagram className="h-5 w-5" />
             </a>
             <a
-              href="#order"
+              href="/#collection"
               className="text-sm text-white/50 hover:text-white transition-colors"
             >
               {t.footer.order}

@@ -10,7 +10,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useI18n } from '@/lib/i18n/context'
-import { useCart, PRODUCT, Size } from '@/lib/cart/context'
+import { useCart, PRODUCTS } from '@/lib/cart/context'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -58,7 +58,6 @@ export default function CheckoutPage() {
   const { t } = useI18n()
   const router = useRouter()
   const { items, totalPriceKZT, totalPriceUSD, totalPriceRUB, clearCart, updateQuantity, removeItem, addItem } = useCart()
-  const availableSizes: Size[] = ['S', 'M', 'L', 'XL']
 
   const schema = useCheckoutSchema()
   const {
@@ -126,9 +125,11 @@ export default function CheckoutPage() {
           deliveryMethod,
           paymentMethod: paymentMethod.toUpperCase(),
           items: items.map((item) => ({
+            productId: item.productId,
+            productName: PRODUCTS[item.productId].name,
             size: item.size,
             quantity: item.quantity,
-            priceKZT: item.quantity * PRODUCT.priceKZT,
+            priceKZT: item.quantity * PRODUCTS[item.productId].priceKZT,
           })),
           totalKZT: totalPriceKZT,
           totalUSD: totalPriceUSD,
@@ -446,12 +447,14 @@ export default function CheckoutPage() {
                 </h2>
 
                 <div className="space-y-4">
-                  {items.map((item) => (
-                    <div key={item.size} className="flex gap-3 p-3 bg-white/5 rounded-lg">
+                  {items.map((item) => {
+                    const product = PRODUCTS[item.productId]
+                    return (
+                    <div key={`${item.productId}-${item.size}`} className="flex gap-3 p-3 bg-white/5 rounded-lg">
                       <div className="w-14 h-18 relative flex-shrink-0 overflow-hidden rounded">
                         <Image
-                          src="/photos/photo11.png"
-                          alt={PRODUCT.name}
+                          src={product.thumb}
+                          alt={product.name}
                           fill
                           className="object-cover"
                           sizes="56px"
@@ -460,11 +463,11 @@ export default function CheckoutPage() {
                       <div className="flex-1 min-w-0 space-y-2">
                         <div className="flex items-start justify-between gap-2">
                           <h3 className="text-sm font-medium truncate">
-                            {PRODUCT.name}
+                            {product.name}
                           </h3>
                           <button
                             type="button"
-                            onClick={() => removeItem(item.size)}
+                            onClick={() => removeItem(item.productId, item.size)}
                             className="text-white/30 hover:text-red-400 transition-colors flex-shrink-0"
                             aria-label={t.cart.remove}
                           >
@@ -475,15 +478,15 @@ export default function CheckoutPage() {
                         <div className="flex items-center gap-2">
                           <span className="text-xs text-white/50">{t.cart.size}:</span>
                           <div className="flex gap-1">
-                            {availableSizes.map((size) => (
+                            {product.sizes.map((size) => (
                               <button
                                 key={size}
                                 type="button"
                                 onClick={() => {
                                   if (size !== item.size) {
                                     const qty = item.quantity
-                                    removeItem(item.size)
-                                    addItem(size, qty)
+                                    removeItem(item.productId, item.size)
+                                    addItem(item.productId, size, qty)
                                   }
                                 }}
                                 className={`text-[10px] px-1.5 py-0.5 rounded border transition-colors ${
@@ -502,7 +505,7 @@ export default function CheckoutPage() {
                           <div className="flex items-center gap-2">
                             <button
                               type="button"
-                              onClick={() => updateQuantity(item.size, item.quantity - 1)}
+                              onClick={() => updateQuantity(item.productId, item.size, item.quantity - 1)}
                               className="w-6 h-6 flex items-center justify-center rounded border border-white/20 text-white/50 hover:border-white/40 hover:text-white transition-colors"
                               aria-label={t.cart.decreaseQty}
                             >
@@ -511,7 +514,7 @@ export default function CheckoutPage() {
                             <span className="text-sm w-5 text-center">{item.quantity}</span>
                             <button
                               type="button"
-                              onClick={() => updateQuantity(item.size, item.quantity + 1)}
+                              onClick={() => updateQuantity(item.productId, item.size, item.quantity + 1)}
                               className="w-6 h-6 flex items-center justify-center rounded border border-white/20 text-white/50 hover:border-white/40 hover:text-white transition-colors"
                               aria-label={t.cart.increaseQty}
                             >
@@ -519,12 +522,13 @@ export default function CheckoutPage() {
                             </button>
                           </div>
                           <span className="text-sm font-medium">
-                            {formatPrice(item.quantity * PRODUCT.priceKZT, t.common.price.kzt)}
+                            {formatPrice(item.quantity * product.priceKZT, t.common.price.kzt)}
                           </span>
                         </div>
                       </div>
                     </div>
-                  ))}
+                    )
+                  })}
                 </div>
 
                 <div className="border-t border-white/10 pt-4 space-y-3">

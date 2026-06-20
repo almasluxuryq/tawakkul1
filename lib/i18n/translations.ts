@@ -10,6 +10,7 @@ export const translations = {
       order: 'Заказать',
       cart: 'Корзина',
       track: 'Отследить заказ',
+      collection: 'Коллекция',
     },
     // Hero
     hero: {
@@ -95,7 +96,7 @@ export const translations = {
     },
     // Quick Order
     quickOrder: {
-      label: 'Лимитированный выпуск · 2025',
+      label: '',
       heading: 'ZIP HOODIE ONE UMMAH',
       features: [
         'Double Layer Air Cotton 350 GSM',
@@ -121,9 +122,9 @@ export const translations = {
     },
     // Footer
     footer: {
-      tagline: 'ONE UMMAH · ZIP HOODIE 2025',
+      tagline: 'FROM 2024',
       order: 'Заказать',
-      copyright: '© 2025 ONE UMMAH · POWERED BY TAWAKKUL',
+      copyright: '© 2024 TAWAKKUL',
       slogan: 'One religion · One purpose · One goal',
     },
     // Cart
@@ -145,10 +146,10 @@ export const translations = {
     sizeChart: {
       title: 'Таблица размеров',
       size: 'Размер',
-      width: 'Ширина (см)',
-      length: 'Длина (см)',
-      sleeve: 'Рукав (см)',
-      note: 'Все замеры в сантиметрах (см). Oversize силуэт — рекомендуем брать свой обычный размер',
+      width: 'Рост (см)',
+      length: 'Вес (кг)',
+      sleeve: '',
+      note: 'Рекомендуемые параметры для правильной посадки. Oversize силуэт — берите свой обычный размер.',
     },
     // Checkout
     checkout: {
@@ -254,6 +255,71 @@ export const translations = {
       addressRequired: 'Введите адрес',
       messengerRequired: 'Введите Telegram или WhatsApp',
     },
+    // Storefront
+    storefront: {
+      label: 'twkkl · Коллекция 2025',
+      manifesto: 'Одежда с намерением. Чистые линии, премиальные ткани и смысл в каждой детали — для тех, кто носит свою веру с достоинством.',
+      viewCollection: 'Смотреть коллекцию',
+      collectionLabel: 'Коллекция',
+      viewProduct: 'Открыть',
+      backToShop: 'Назад в магазин',
+    },
+    // Product status / drop countdown
+    status: {
+      comingSoon: 'Скоро в продаже',
+      preorder: 'Предзаказ',
+      soldOut: 'Нет в наличии',
+      cardComingSoon: 'Скоро · Уведомить',
+      cardSoldOut: 'Продано',
+      dropsIn: 'До старта продаж',
+      dropDate: '30 июня 2026',
+      notifyHeading: 'Узнай первым о старте',
+      notifyBody: 'Подпишись на канал — пришлём уведомление в день дропа.',
+      notifyCta: 'Уведомить о старте',
+      preorderCta: 'Оформить предзаказ',
+      countdown: { days: 'дней', hours: 'часов', minutes: 'минут', seconds: 'секунд' },
+    },
+    // AWRAH SHORTS
+    shorts: {
+      tagline: 'AWRAH SHORTS · 2-в-1',
+      color: 'Цвет',
+      colorNote: 'Выберите цвет',
+      preorderPrice: 'Цена предзаказа',
+      regularPrice: 'При наличии',
+      fabric: '180 GSM · DTG TWKKL (Tawakkul)',
+      worldwide: 'Доставка по всему миру',
+      sizeGuide: {
+        m: 'Рост 165–175 см · Вес 60–73 кг',
+        l: 'Рост 176–185 см · Вес 75–88 кг',
+        xl: 'Рост 183–195+ см · Вес 90–105+ кг',
+      },
+      preorderDm: {
+        heading: 'Оформить предзаказ',
+        body: 'Выбрали цвет и размер? Напишите нам напрямую.',
+        wa: 'Написать в WhatsApp',
+        tg: 'Написать в Telegram',
+      },
+      notifyDm: {
+        heading: 'Подождать и получить уведомление',
+        body: 'Дроп и отгрузка — 30 июня 2026. Подпишитесь на канал.',
+        cta: 'Подписаться на канал',
+      },
+      fit: {
+        label: 'Посадка',
+        heading: 'Двухслойные шорты со встроенными тайтсами.',
+        description: 'Свободные шорты поверх плотных тайтсов ниже колена. Закрытый аурат без компромиссов в свободе движений — для намаза, зала и улицы.',
+      },
+      waistband: {
+        label: 'Пояс',
+        heading: 'Высокий плотный пояс для фиксации.',
+        description: 'Широкий двойной пояс: внешний эластичный шнурок + внутренний тайтс-пояс. Всё фиксируется, ничего не сползает.',
+      },
+      movement: {
+        label: 'Движение',
+        heading: 'Создано для тренировок.',
+        description: '180 GSM — плотная, но дышащая ткань. Тянется в любом направлении, не теряет форму. Каллиграфический логотип twkkl на бедре.',
+      },
+    },
     // Common
     common: {
       price: {
@@ -272,6 +338,7 @@ export const translations = {
       order: 'Тапсырыс беру',
       cart: 'Себет',
       track: 'Тапсырысты бақылау',
+      collection: 'Коллекция',
     },
     // Hero
     hero: {
@@ -357,7 +424,7 @@ export const translations = {
     },
     // Quick Order
     quickOrder: {
-      label: 'Лимиттелген шығарылым · 2025',
+      label: '',
       heading: 'ZIP HOODIE ONE UMMAH',
       features: [
         'Double Layer Air Cotton 350 GSM',
@@ -383,9 +450,9 @@ export const translations = {
     },
     // Footer
     footer: {
-      tagline: 'ONE UMMAH · ZIP HOODIE 2025',
+      tagline: 'FROM 2024',
       order: 'Тапсырыс беру',
-      copyright: '© 2025 ONE UMMAH · POWERED BY TAWAKKUL',
+      copyright: '© 2024 TAWAKKUL',
       slogan: 'One religion · One purpose · One goal',
     },
     // Cart
@@ -407,10 +474,10 @@ export const translations = {
     sizeChart: {
       title: 'Өлшемдер кестесі',
       size: 'Өлшем',
-      width: 'Ені (см)',
-      length: 'Ұзындық (см)',
-      sleeve: 'Жең (см)',
-      note: 'Барлық өлшемдер сантиметрмен (см). Oversize силуэт — әдеттегі өлшеміңізді алуды ұсынамыз',
+      width: 'Бойы (см)',
+      length: 'Салмағы (кг)',
+      sleeve: '',
+      note: 'Дұрыс отыру үшін ұсынылатын параметрлер. Oversize силуэт — әдеттегі өлшеміңізді алыңыз.',
     },
     // Checkout
     checkout: {
@@ -516,6 +583,71 @@ export const translations = {
       addressRequired: 'Мекенжайды енгізіңіз',
       messengerRequired: 'Telegram немесе WhatsApp енгізіңіз',
     },
+    // Storefront
+    storefront: {
+      label: 'twkkl · 2025 коллекциясы',
+      manifesto: 'Ниетпен жасалған киім. Таза сызықтар, премиум маталар және әр детальдағы мағына — сенімін абыроймен ұстайтындар үшін.',
+      viewCollection: 'Коллекцияны қарау',
+      collectionLabel: 'Коллекция',
+      viewProduct: 'Ашу',
+      backToShop: 'Дүкенге қайту',
+    },
+    // Product status / drop countdown
+    status: {
+      comingSoon: 'Жақында сатылымда',
+      preorder: 'Алдын ала тапсырыс',
+      soldOut: 'Сатылып кетті',
+      cardComingSoon: 'Жақында · Хабарлау',
+      cardSoldOut: 'Сатылды',
+      dropsIn: 'Сатылым басталуына',
+      dropDate: '2026 ж. 30 маусым',
+      notifyHeading: 'Старт туралы бірінші біл',
+      notifyBody: 'Арнаға жазыл — дроп күні хабарлама жібереміз.',
+      notifyCta: 'Старт туралы хабарлау',
+      preorderCta: 'Алдын ала тапсырыс беру',
+      countdown: { days: 'күн', hours: 'сағат', minutes: 'минут', seconds: 'секунд' },
+    },
+    // AWRAH SHORTS
+    shorts: {
+      tagline: 'AWRAH SHORTS · 2-де-1',
+      color: 'Түс',
+      colorNote: 'Түс таңдаңыз',
+      preorderPrice: 'Алдын ала тапсырыс бағасы',
+      regularPrice: 'Қорда болғанда',
+      fabric: '180 GSM · DTG TWKKL (Tawakkul)',
+      worldwide: 'Бүкіл әлем бойынша жеткізу',
+      sizeGuide: {
+        m: 'Бойы 165–175 см · Салмағы 60–73 кг',
+        l: 'Бойы 176–185 см · Салмағы 75–88 кг',
+        xl: 'Бойы 183–195+ см · Салмағы 90–105+ кг',
+      },
+      preorderDm: {
+        heading: 'Алдын ала тапсырыс беру',
+        body: 'Түс пен өлшем таңдадыңыз ба? Бізге тікелей жазыңыз.',
+        wa: 'WhatsApp-қа жазу',
+        tg: 'Telegram-ға жазу',
+      },
+      notifyDm: {
+        heading: 'Күту және хабарлама алу',
+        body: 'Дроп және жеткізу — 2026 ж. 30 маусым. Арнаға жазылыңыз.',
+        cta: 'Арнаға жазылу',
+      },
+      fit: {
+        label: 'Отыру',
+        heading: 'Ішкі тайтсы бар екі қабатты шорты.',
+        description: 'Тізеден төмен тығыз тайтс үстіндегі еркін шорты. Намаз, зал және көшеде ауратты жабу — қозғалыс еркіндігінсіз.',
+      },
+      waistband: {
+        label: 'Белдік',
+        heading: 'Бекіту үшін биік тығыз белдік.',
+        description: 'Кең қос белдік: сыртқы серпімді шнур + ішкі тайтс-белдік. Бәрі бекітілген, еш нәрсе түспейді.',
+      },
+      movement: {
+        label: 'Қозғалыс',
+        heading: 'Жаттығуға арналған.',
+        description: '180 GSM — тығыз, бірақ ыстық ұстамайтын мата. Кез келген бағытта созылып, пішінін сақтайды. Жамбаста twkkl каллиграфиялық логотипі.',
+      },
+    },
     // Common
     common: {
       price: {
@@ -534,6 +666,7 @@ export const translations = {
       order: 'Order',
       cart: 'Cart',
       track: 'Track Order',
+      collection: 'Collection',
     },
     // Hero
     hero: {
@@ -619,7 +752,7 @@ export const translations = {
     },
     // Quick Order
     quickOrder: {
-      label: 'Limited Edition · 2025',
+      label: '',
       heading: 'ZIP HOODIE ONE UMMAH',
       features: [
         'Double Layer Air Cotton 350 GSM',
@@ -645,9 +778,9 @@ export const translations = {
     },
     // Footer
     footer: {
-      tagline: 'ONE UMMAH · ZIP HOODIE 2025',
+      tagline: 'FROM 2024',
       order: 'Order',
-      copyright: '© 2025 ONE UMMAH · POWERED BY TAWAKKUL',
+      copyright: '© 2024 TAWAKKUL',
       slogan: 'One religion · One purpose · One goal',
     },
     // Cart
@@ -669,10 +802,10 @@ export const translations = {
     sizeChart: {
       title: 'Size Chart',
       size: 'Size',
-      width: 'Width (cm)',
-      length: 'Length (cm)',
-      sleeve: 'Sleeve (cm)',
-      note: 'All measurements in centimeters (cm). Oversized fit — we recommend ordering your usual size',
+      width: 'Height (cm)',
+      length: 'Weight (kg)',
+      sleeve: '',
+      note: 'Recommended body measurements for the right fit. Oversized silhouette — take your usual size.',
     },
     // Checkout
     checkout: {
@@ -777,6 +910,71 @@ export const translations = {
       cityRequired: 'Please enter your city',
       addressRequired: 'Please enter your address',
       messengerRequired: 'Please enter Telegram or WhatsApp',
+    },
+    // Storefront
+    storefront: {
+      label: 'twkkl · 2025 Collection',
+      manifesto: 'Clothing with intention. Clean lines, premium fabrics and meaning in every detail — for those who wear their faith with dignity.',
+      viewCollection: 'View Collection',
+      collectionLabel: 'Collection',
+      viewProduct: 'Open',
+      backToShop: 'Back to shop',
+    },
+    // Product status / drop countdown
+    status: {
+      comingSoon: 'Coming soon',
+      preorder: 'Pre-order',
+      soldOut: 'Sold out',
+      cardComingSoon: 'Soon · Notify',
+      cardSoldOut: 'Sold out',
+      dropsIn: 'Drops in',
+      dropDate: 'June 30, 2026',
+      notifyHeading: 'Be first to know',
+      notifyBody: 'Subscribe to the channel — we will ping you on drop day.',
+      notifyCta: 'Notify me at launch',
+      preorderCta: 'Place pre-order',
+      countdown: { days: 'days', hours: 'hours', minutes: 'min', seconds: 'sec' },
+    },
+    // AWRAH SHORTS
+    shorts: {
+      tagline: 'AWRAH SHORTS · 2-in-1',
+      color: 'Color',
+      colorNote: 'Select a color',
+      preorderPrice: 'Pre-order price',
+      regularPrice: 'Regular price',
+      fabric: '180 GSM · DTG TWKKL (Tawakkul)',
+      worldwide: 'Worldwide shipping',
+      sizeGuide: {
+        m: 'Height 165–175 cm · Weight 60–73 kg',
+        l: 'Height 176–185 cm · Weight 75–88 kg',
+        xl: 'Height 183–195+ cm · Weight 90–105+ kg',
+      },
+      preorderDm: {
+        heading: 'Place a pre-order',
+        body: 'Picked your color and size? Message us directly.',
+        wa: 'Message on WhatsApp',
+        tg: 'Message on Telegram',
+      },
+      notifyDm: {
+        heading: 'Wait and get notified',
+        body: 'Drop and shipping — June 30, 2026. Subscribe to the channel.',
+        cta: 'Subscribe to channel',
+      },
+      fit: {
+        label: 'Fit',
+        heading: 'Two-layer shorts with built-in tights.',
+        description: 'Relaxed shorts over dense below-the-knee tights. Aurah covered without compromising freedom of movement — for prayer, gym, and street.',
+      },
+      waistband: {
+        label: 'Waistband',
+        heading: 'High, firm waistband for a secure hold.',
+        description: 'Wide double waistband: outer elastic drawstring + inner tights waistband. Everything stays in place, nothing slides down.',
+      },
+      movement: {
+        label: 'Movement',
+        heading: 'Built for training.',
+        description: '180 GSM — dense yet breathable fabric. Stretches in every direction and holds its shape. twkkl calligraphy logo on the hip.',
+      },
     },
     // Common
     common: {

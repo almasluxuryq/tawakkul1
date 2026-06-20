@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, ShoppingBag, ChevronDown } from 'lucide-react'
 import { useI18n } from '@/lib/i18n/context'
@@ -16,10 +17,8 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 const navLinks = [
-  { href: '#product', key: 'product' as const },
-  { href: '#gallery', key: 'gallery' as const },
-  { href: '#manifesto', key: 'manifesto' as const },
-  { href: '#order', key: 'order' as const },
+  { href: '/#collection', key: 'collection' as const },
+  { href: '/#manifesto', key: 'manifesto' as const },
 ]
 
 const languages: { code: Language; label: string }[] = [
@@ -53,40 +52,62 @@ export function Header() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          isScrolled
-            ? 'bg-black/80 backdrop-blur-md'
-            : 'bg-transparent'
+          isScrolled ? 'bg-black/80 backdrop-blur-md' : 'bg-transparent'
         }`}
       >
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 lg:h-20">
-            {/* Logo */}
-            <Link href="/" className="flex-shrink-0">
-              <span className="text-lg font-medium tracking-[0.15em] uppercase">
-                TAWAKKUL
+          <div className="relative flex items-center justify-between h-16 lg:h-20">
+            {/* Left cluster */}
+            <div className="flex items-center gap-10">
+              {/* Mobile menu button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="lg:hidden text-white/50 hover:text-white hover:bg-transparent -ml-2"
+                onClick={() => setIsMobileMenuOpen(true)}
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+
+              {/* Desktop Navigation */}
+              <nav className="hidden lg:flex items-center gap-10">
+                {navLinks.map((link) => (
+                  <a
+                    key={link.key}
+                    href={link.href}
+                    className="text-sm text-white/50 hover:text-white transition-colors duration-300"
+                  >
+                    {t.nav[link.key]}
+                  </a>
+                ))}
+                <Link
+                  href="/track"
+                  className="text-sm text-white/50 hover:text-white transition-colors duration-300"
+                >
+                  {t.nav.track}
+                </Link>
+              </nav>
+            </div>
+
+            {/* Centered logo */}
+            <Link
+              href="/"
+              className="absolute left-1/2 -translate-x-1/2 flex items-center"
+              aria-label="twkkl"
+            >
+              <span className="relative block h-5 lg:h-6 w-[56px] lg:w-[68px]">
+                <Image
+                  src="/logo-twkkl.png"
+                  alt="twkkl"
+                  fill
+                  priority
+                  className="object-contain"
+                  sizes="68px"
+                />
               </span>
             </Link>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-10">
-              {navLinks.map((link) => (
-                <a
-                  key={link.key}
-                  href={link.href}
-                  className="text-sm text-white/50 hover:text-white transition-colors duration-300"
-                >
-                  {t.nav[link.key]}
-                </a>
-              ))}
-              <Link
-                href="/track"
-                className="text-sm text-white/50 hover:text-white transition-colors duration-300"
-              >
-                {t.nav.track}
-              </Link>
-            </nav>
-
-            {/* Right Side */}
+            {/* Right cluster */}
             <div className="flex items-center gap-3">
               {/* Language Switcher */}
               <DropdownMenu>
@@ -140,16 +161,6 @@ export function Header() {
                   </motion.span>
                 )}
               </Button>
-
-              {/* Mobile Menu Button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="lg:hidden text-white/50 hover:text-white hover:bg-transparent"
-                onClick={() => setIsMobileMenuOpen(true)}
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
             </div>
           </div>
         </div>
@@ -168,16 +179,22 @@ export function Header() {
               onClick={() => setIsMobileMenuOpen(false)}
             />
             <motion.div
-              initial={{ x: '100%' }}
+              initial={{ x: '-100%' }}
               animate={{ x: 0 }}
-              exit={{ x: '100%' }}
+              exit={{ x: '-100%' }}
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="fixed top-0 right-0 bottom-0 w-full max-w-xs bg-black z-50 lg:hidden"
+              className="fixed top-0 left-0 bottom-0 w-full max-w-xs bg-black z-50 lg:hidden"
             >
               <div className="flex flex-col h-full">
                 <div className="flex items-center justify-between p-5 border-b border-white/10">
-                  <span className="text-lg font-medium tracking-[0.15em] uppercase">
-                    TAWAKKUL
+                  <span className="relative block h-5 w-[56px]">
+                    <Image
+                      src="/logo-twkkl.png"
+                      alt="twkkl"
+                      fill
+                      className="object-contain"
+                      sizes="56px"
+                    />
                   </span>
                   <Button
                     variant="ghost"
@@ -217,9 +234,9 @@ export function Header() {
                   </motion.div>
                 </nav>
                 <div className="p-5 border-t border-white/10">
-                  <a href="#order" onClick={handleNavClick}>
+                  <a href="/#collection" onClick={handleNavClick}>
                     <Button className="w-full bg-white text-black hover:bg-white/90 transition-all duration-300">
-                      {t.nav.order}
+                      {t.storefront.viewCollection}
                     </Button>
                   </a>
                 </div>

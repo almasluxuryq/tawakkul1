@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Search, Check, Loader2, Circle, Package, ChevronDown } from 'lucide-react'
 import { useI18n } from '@/lib/i18n/context'
-import { PRODUCT } from '@/lib/cart/context'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
@@ -16,7 +15,7 @@ interface OrderData {
   date: string
   status: string
   trackingNumber: string | null
-  items: Array<{ size: string; quantity: number }>
+  items: Array<{ productName?: string; size: string; quantity: number }>
   address: string
 }
 
@@ -174,7 +173,7 @@ export default function TrackOrderPage() {
           <p className="text-sm text-white/50 mb-3">{t.success.details}</p>
           {order.items.map((item, index) => (
             <p key={index}>
-              {PRODUCT.name} — {t.cart.size}: {item.size}, {t.cart.quantity}: {item.quantity}
+              {item.productName ?? 'ONE UMMAH ZIP HOODIE'} — {t.cart.size}: {item.size}, {t.cart.quantity}: {item.quantity}
             </p>
           ))}
         </div>

@@ -65,12 +65,14 @@ model Order {
 }
 
 model OrderItem {
-  id        String @id @default(cuid())
-  orderId   String
-  order     Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  size      String
-  quantity  Int
-  priceKZT  Int
+  id          String @id @default(cuid())
+  orderId     String
+  order       Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   String @default("one-ummah-zip-hoodie")
+  productName String @default("ONE UMMAH ZIP HOODIE")
+  size        String
+  quantity    Int
+  priceKZT    Int
 
   @@index([orderId])
 }

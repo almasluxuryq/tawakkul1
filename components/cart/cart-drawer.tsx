@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import { X, Minus, Plus, Trash2, ShoppingBag } from 'lucide-react'
 import { useI18n } from '@/lib/i18n/context'
-import { useCart, PRODUCT } from '@/lib/cart/context'
+import { useCart, PRODUCTS } from '@/lib/cart/context'
 import { Button } from '@/components/ui/button'
 import { useIsMobile } from '@/hooks/use-mobile'
 
@@ -93,73 +93,77 @@ export function CartDrawer() {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {items.map((item) => (
-                      <div
-                        key={item.size}
-                        className="flex gap-4 p-3 bg-white/5 rounded-lg"
-                      >
-                        <div className="w-20 h-24 relative flex-shrink-0 overflow-hidden">
-                          <Image
-                            src="/photos/photo11.png"
-                            alt={PRODUCT.name}
-                            fill
-                            className="object-cover"
-                            sizes="80px"
-                          />
-                        </div>
+                    {items.map((item) => {
+                      const product = PRODUCTS[item.productId]
+                      return (
+                        <div
+                          key={`${item.productId}-${item.size}`}
+                          className="flex gap-4 p-3 bg-white/5 rounded-lg"
+                        >
+                          <div className="w-20 h-24 relative flex-shrink-0 overflow-hidden">
+                            <Image
+                              src={product.thumb}
+                              alt={product.name}
+                              fill
+                              className="object-cover"
+                              sizes="80px"
+                            />
+                          </div>
 
-                        {/* Details */}
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-sm font-medium truncate">
-                            {PRODUCT.name}
-                          </h3>
-                          <p className="text-xs text-white/50 mt-1">
-                            {t.cart.size}: {item.size}
-                          </p>
+                          {/* Details */}
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-sm font-medium truncate">
+                              {product.name}
+                            </h3>
+                            <p className="text-xs text-white/50 mt-1">
+                              {t.cart.size}: {item.size}
+                            </p>
 
-                          {/* Quantity controls */}
-                          <div className="flex items-center gap-2 mt-3">
+                            {/* Quantity controls */}
+                            <div className="flex items-center gap-2 mt-3">
+                              <button
+                                onClick={() =>
+                                  updateQuantity(item.productId, item.size, item.quantity - 1)
+                                }
+                                aria-label={t.cart.decreaseQty}
+                                className="w-7 h-7 border border-white/20 flex items-center justify-center rounded hover:border-white/40"
+                              >
+                                <Minus className="h-3 w-3" />
+                              </button>
+                              <span className="w-6 text-center text-sm">
+                                {item.quantity}
+                              </span>
+                              <button
+                                onClick={() =>
+                                  updateQuantity(item.productId, item.size, item.quantity + 1)
+                                }
+                                aria-label={t.cart.increaseQty}
+                                className="w-7 h-7 border border-white/20 flex items-center justify-center rounded hover:border-white/40"
+                              >
+                                <Plus className="h-3 w-3" />
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Price and remove */}
+                          <div className="flex flex-col items-end justify-between">
                             <button
-                              onClick={() =>
-                                updateQuantity(item.size, item.quantity - 1)
-                              }
-                              aria-label={t.cart.decreaseQty}
-                              className="w-7 h-7 border border-white/20 flex items-center justify-center rounded hover:border-white/40"
+                              onClick={() => removeItem(item.productId, item.size)}
+                              className="text-white/30 hover:text-white/70"
+                              aria-label={t.cart.remove}
                             >
-                              <Minus className="h-3 w-3" />
+                              <Trash2 className="h-4 w-4" />
                             </button>
-                            <span className="w-6 text-center text-sm">
-                              {item.quantity}
+                            <span className="text-sm">
+                              {formatPrice(
+                                item.quantity * product.priceKZT,
+                                t.common.price.kzt
+                              )}
                             </span>
-                            <button
-                              onClick={() =>
-                                updateQuantity(item.size, item.quantity + 1)
-                              }
-                              aria-label={t.cart.increaseQty}
-                              className="w-7 h-7 border border-white/20 flex items-center justify-center rounded hover:border-white/40"
-                            >
-                              <Plus className="h-3 w-3" />
-                            </button>
                           </div>
                         </div>
-
-                        {/* Price and remove */}
-                        <div className="flex flex-col items-end justify-between">
-                          <button
-                            onClick={() => removeItem(item.size)}
-                            className="text-white/30 hover:text-white/70"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                          <span className="text-sm">
-                            {formatPrice(
-                              item.quantity * PRODUCT.priceKZT,
-                              t.common.price.kzt
-                            )}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
+                      )
+                    })}
                   </div>
                 )}
               </div>
@@ -231,72 +235,75 @@ export function CartDrawer() {
                   </div>
                 ) : (
                   <div className="space-y-6">
-                    {items.map((item) => (
-                      <div
-                        key={item.size}
-                        className="flex gap-4 p-4 bg-white/5 rounded-lg"
-                      >
-                        <div className="w-24 h-28 relative flex-shrink-0 overflow-hidden">
-                          <Image
-                            src="/photos/photo11.png"
-                            alt={PRODUCT.name}
-                            fill
-                            className="object-cover"
-                            sizes="96px"
-                          />
-                        </div>
+                    {items.map((item) => {
+                      const product = PRODUCTS[item.productId]
+                      return (
+                        <div
+                          key={`${item.productId}-${item.size}`}
+                          className="flex gap-4 p-4 bg-white/5 rounded-lg"
+                        >
+                          <div className="w-24 h-28 relative flex-shrink-0 overflow-hidden">
+                            <Image
+                              src={product.thumb}
+                              alt={product.name}
+                              fill
+                              className="object-cover"
+                              sizes="96px"
+                            />
+                          </div>
 
-                        {/* Details */}
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-medium">{PRODUCT.name}</h3>
-                          <p className="text-sm text-white/50 mt-1">
-                            {t.cart.size}: {item.size}
-                          </p>
+                          {/* Details */}
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-medium">{product.name}</h3>
+                            <p className="text-sm text-white/50 mt-1">
+                              {t.cart.size}: {item.size}
+                            </p>
 
-                          {/* Quantity controls */}
-                          <div className="flex items-center gap-3 mt-4">
+                            {/* Quantity controls */}
+                            <div className="flex items-center gap-3 mt-4">
+                              <button
+                                onClick={() =>
+                                  updateQuantity(item.productId, item.size, item.quantity - 1)
+                                }
+                                aria-label={t.cart.decreaseQty}
+                                className="w-8 h-8 border border-white/20 flex items-center justify-center hover:border-white/40 transition-colors"
+                              >
+                                <Minus className="h-4 w-4" />
+                              </button>
+                              <span className="w-8 text-center">
+                                {item.quantity}
+                              </span>
+                              <button
+                                onClick={() =>
+                                  updateQuantity(item.productId, item.size, item.quantity + 1)
+                                }
+                                aria-label={t.cart.increaseQty}
+                                className="w-8 h-8 border border-white/20 flex items-center justify-center hover:border-white/40 transition-colors"
+                              >
+                                <Plus className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Price and remove */}
+                          <div className="flex flex-col items-end justify-between">
                             <button
-                              onClick={() =>
-                                updateQuantity(item.size, item.quantity - 1)
-                              }
-                              aria-label={t.cart.decreaseQty}
-                              className="w-8 h-8 border border-white/20 flex items-center justify-center hover:border-white/40 transition-colors"
+                              onClick={() => removeItem(item.productId, item.size)}
+                              className="text-white/30 hover:text-white/70 transition-colors"
+                              aria-label={t.cart.remove}
                             >
-                              <Minus className="h-4 w-4" />
+                              <Trash2 className="h-5 w-5" />
                             </button>
-                            <span className="w-8 text-center">
-                              {item.quantity}
+                            <span className="font-medium">
+                              {formatPrice(
+                                item.quantity * product.priceKZT,
+                                t.common.price.kzt
+                              )}
                             </span>
-                            <button
-                              onClick={() =>
-                                updateQuantity(item.size, item.quantity + 1)
-                              }
-                              aria-label={t.cart.increaseQty}
-                              className="w-8 h-8 border border-white/20 flex items-center justify-center hover:border-white/40 transition-colors"
-                            >
-                              <Plus className="h-4 w-4" />
-                            </button>
                           </div>
                         </div>
-
-                        {/* Price and remove */}
-                        <div className="flex flex-col items-end justify-between">
-                          <button
-                            onClick={() => removeItem(item.size)}
-                            className="text-white/30 hover:text-white/70 transition-colors"
-                            aria-label={t.cart.remove}
-                          >
-                            <Trash2 className="h-5 w-5" />
-                          </button>
-                          <span className="font-medium">
-                            {formatPrice(
-                              item.quantity * PRODUCT.priceKZT,
-                              t.common.price.kzt
-                            )}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
+                      )
+                    })}
                   </div>
                 )}
               </div>
