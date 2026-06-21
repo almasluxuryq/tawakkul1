@@ -1,21 +1,26 @@
 #!/usr/bin/env bash
 ###############################################################################
 # TWKKL — этап 2: переключить домен twkklbrand.com на новый сайт (:3001)
-# Делает бэкап nginx, проверяет конфиг, при ошибке откатывает.
+# Переиспользует существующий SSL-сертификат -> HTTPS без простоя.
+# Делает бэкап nginx, проверяет, при ошибке откатывает. Старый сайт не удаляется.
 ###############################################################################
 set -uo pipefail
 PORT=3001
-EMAIL=almasluxuryq@gmail.com
+DOMAIN=twkklbrand.com
+CERT=/etc/letsencrypt/live/twkklbrand.com
 LOG=/root/twkkl-golive.log
 exec > >(tee -a "$LOG") 2>&1
 echo "================ TWKKL GO-LIVE $(date) ================"
 
-# 0. Новый сайт точно работает?
+# 0. Новый сайт реально работает и отдаёт нужную страницу?
+HTML=$(curl -s "http://localhost:$PORT/" || true)
 CODE=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:$PORT/" || echo 000)
-echo "Новый сайт на :$PORT => HTTP $CODE"
-if [ "$CODE" != "200" ]; then
-  echo "СТОП: новый сайт не отвечает 200. Сначала доделай этап 1 (deploy.sh)."; exit 1
+echo "Новый сайт :$PORT => HTTP $CODE"
+if [ "$CODE" != "200" ] || ! echo "$HTML" | grep -qi "TAWAKKUL"; then
+  echo "СТОП: новый сайт не отдаёт нормальную главную страницу. Домен НЕ трогаю."
+  exit 1
 fi
+echo "Проверка контента: на странице найдено 'TAWAKKUL' — ок"
 
 # 1. Бэкап nginx
 TS=$(date +%Y%m%d-%H%M%S); BK=/root/nginx-backup-$TS
@@ -23,12 +28,45 @@ mkdir -p "$BK"; cp -a /etc/nginx/sites-available "$BK/" 2>/dev/null || true
 cp -a /etc/nginx/sites-enabled "$BK/" 2>/dev/null || true
 echo "Бэкап nginx -> $BK"
 
-# 2. Какие конфиги уже упоминают домен
-mapfile -t HITS < <(grep -rl 'twkklbrand.com' /etc/nginx/sites-available /etc/nginx/sites-enabled 2>/dev/null | sort -u)
-echo "Конфиги с доменом: ${HITS[*]:-нет}"
+# 2. Старые конфиги домена
+mapfile -t HITS < <(grep -rl "$DOMAIN" /etc/nginx/sites-available /etc/nginx/sites-enabled 2>/dev/null | sort -u)
+echo "Старые конфиги с доменом: ${HITS[*]:-нет}"
 
-# 3. Новый конфиг
-cat > /etc/nginx/sites-available/twkkl-new <<'NGX'
+# 3. Новый конфиг (с HTTPS если сертификат есть)
+if [ -f "$CERT/fullchain.pem" ]; then
+  echo "Сертификат найден -> пишу конфиг с HTTPS"
+  cat > /etc/nginx/sites-available/twkkl-new <<NGX
+server {
+    listen 80;
+    listen [::]:80;
+    server_name twkklbrand.com www.twkklbrand.com;
+    return 301 https://\$host\$request_uri;
+}
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name twkklbrand.com www.twkklbrand.com;
+    ssl_certificate $CERT/fullchain.pem;
+    ssl_certificate_key $CERT/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+    client_max_body_size 25M;
+    location / {
+        proxy_pass http://127.0.0.1:3001;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_cache_bypass \$http_upgrade;
+    }
+}
+NGX
+else
+  echo "Сертификата нет -> конфиг только http, потом certbot"
+  cat > /etc/nginx/sites-available/twkkl-new <<NGX
 server {
     listen 80;
     listen [::]:80;
@@ -37,16 +75,16 @@ server {
     location / {
         proxy_pass http://127.0.0.1:3001;
         proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_cache_bypass $http_upgrade;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_cache_bypass \$http_upgrade;
     }
 }
 NGX
+fi
 
 # 4. Отключить старые конфиги домена
 for f in "${HITS[@]}"; do
@@ -59,23 +97,26 @@ ln -sf /etc/nginx/sites-available/twkkl-new /etc/nginx/sites-enabled/twkkl-new
 
 # 5. Проверка + reload (с откатом)
 if nginx -t; then
-  systemctl reload nginx; echo "HTTP переключён на новый сайт."
+  systemctl reload nginx; echo "ГОТОВО: домен переключён на новый сайт."
 else
-  echo "nginx -t ПРОВАЛ — откат."
+  echo "nginx -t ПРОВАЛ — откатываю на старый сайт."
   rm -f /etc/nginx/sites-enabled/twkkl-new
   rm -rf /etc/nginx/sites-enabled; cp -a "$BK/sites-enabled" /etc/nginx/sites-enabled
   nginx -t && systemctl reload nginx
   echo "Откат выполнен, старый сайт на месте. Бэкап: $BK"; exit 1
 fi
 
-# 6. HTTPS
-command -v certbot >/dev/null || apt-get install -y certbot python3-certbot-nginx
-certbot --nginx -d twkklbrand.com -d www.twkklbrand.com --non-interactive --agree-tos -m "$EMAIL" --redirect \
-  || echo "Внимание: certbot не доделал HTTPS. Сайт пока по http, повторим позже."
-nginx -t && systemctl reload nginx
+# 6. Если сертификата не было — выпустить
+if [ ! -f "$CERT/fullchain.pem" ]; then
+  command -v certbot >/dev/null || apt-get install -y certbot python3-certbot-nginx
+  certbot --nginx -d twkklbrand.com -d www.twkklbrand.com --non-interactive --agree-tos -m almasluxuryq@gmail.com --redirect || echo "certbot не доделал — повторим позже"
+  nginx -t && systemctl reload nginx
+fi
 
 echo "================ ПРОВЕРКА ================"
 curl -s -o /dev/null -w "http  => %{http_code}\n" http://twkklbrand.com/  || true
 curl -s -o /dev/null -w "https => %{http_code}\n" https://twkklbrand.com/ || true
-echo "ГОТОВО. Открой https://twkklbrand.com"
-echo "Если что-то не так — откат: бэкап nginx лежит в $BK"
+echo "#####################################################################"
+echo "#  ГОТОВО. Открой https://twkklbrand.com — там должен быть НОВЫЙ сайт #"
+echo "#  Откат при необходимости: бэкап nginx в $BK                        #"
+echo "#####################################################################"
