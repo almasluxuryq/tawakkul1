@@ -69,9 +69,7 @@ export function StorefrontProducts() {
                     <p className="text-sm text-white/50 mt-1">
                       {product.status === 'coming_soon'
                         ? `${t.status.dropsIn} · ${t.status.dropDate}`
-                        : product.status === 'preorder' && product.preorderPriceKZT
-                        ? formatPrice(product.preorderPriceKZT, t.common.price.kzt)
-                        : formatPrice(product.priceKZT, t.common.price.kzt)}
+                        : formatPrice(product.priceRUB, t.common.price.rub)}
                     </p>
                   </div>
                   <span className="flex items-center gap-1 text-xs tracking-[0.15em] uppercase text-white/40 group-hover:text-white transition-colors pt-1">

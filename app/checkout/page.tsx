@@ -4,32 +4,19 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { motion } from 'framer-motion'
-import { ArrowLeft, Shield, Truck, RotateCcw, AlertTriangle, Minus, Plus, Trash2 } from 'lucide-react'
+import { ArrowLeft, Truck, Trash2, Minus, Plus, Info } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useI18n } from '@/lib/i18n/context'
-import { useCart, PRODUCTS } from '@/lib/cart/context'
+import { useCart, PRODUCTS, COLOR_LABEL_RU } from '@/lib/cart/context'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 
-type Country = 'kz' | 'ru'
-type PaymentMethod = 'kaspi' | 'vtb'
+type Country = 'ru' | 'kz' | 'world'
 
-const deliveryMethods = {
-  kz: ['kazpost', 'cdek'] as const,
-  ru: ['cdek', 'pochta'] as const,
-}
+const KZ_DELIVERY_FEE = 1600 // ₸, Казпочта
 
 function useCheckoutSchema() {
   const { t } = useI18n()
@@ -54,10 +41,19 @@ function FieldError({ message }: { message?: string }) {
   return <p className="text-xs text-red-400 mt-1">{message}</p>
 }
 
+const fmt = (price: number, currency: string) =>
+  new Intl.NumberFormat('ru-RU').format(price) + ' ' + currency
+
+const COUNTRY_OPTIONS: { value: Country; label: string }[] = [
+  { value: 'ru', label: '🇷🇺 Россия' },
+  { value: 'kz', label: '🇰🇿 Казахстан' },
+  { value: 'world', label: '🌍 Другая страна' },
+]
+
 export default function CheckoutPage() {
   const { t } = useI18n()
   const router = useRouter()
-  const { items, totalPriceKZT, totalPriceUSD, totalPriceRUB, clearCart, updateQuantity, removeItem, addItem } = useCart()
+  const { items, totalPriceKZT, totalPriceUSD, totalPriceRUB, clearCart, updateQuantity, removeItem } = useCart()
 
   const schema = useCheckoutSchema()
   const {
@@ -66,49 +62,30 @@ export default function CheckoutPage() {
     formState: { errors },
   } = useForm<CheckoutFormData>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      name: '',
-      phone: '',
-      email: '',
-      messenger: '',
-      city: '',
-      address: '',
-      postalCode: '',
-    },
+    defaultValues: { name: '', phone: '', email: '', messenger: '', city: '', address: '', postalCode: '' },
   })
 
-  const [country, setCountry] = useState<Country>('kz')
-  const [deliveryMethod, setDeliveryMethod] = useState<string>('cdek')
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('kaspi')
+  const [country, setCountry] = useState<Country>('ru')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleCountryChange = (v: Country) => {
-    setCountry(v)
-    setPaymentMethod(v === 'kz' ? 'kaspi' : 'vtb')
-  }
-
   useEffect(() => {
-    if (items.length === 0 && !isSubmitting) {
-      router.push('/')
-    }
+    if (items.length === 0 && !isSubmitting) router.push('/')
   }, [items, router, isSubmitting])
 
-  const formatPrice = (price: number, currency: string) => {
-    return new Intl.NumberFormat('ru-RU').format(price) + ' ' + currency
-  }
+  const deliveryFeeKZT = country === 'kz' ? KZ_DELIVERY_FEE : 0
+  const paymentApi = country === 'ru' ? 'VTB' : 'KASPI'
+  const countryApi = country === 'ru' ? 'RU' : country === 'kz' ? 'KZ' : 'WORLD'
 
-  const deliveryCosts: Record<string, { kzt: number; rub: number; usd: number }> = {
-    cdek: { kzt: 5900, rub: 1000, usd: 12 },
-    kazpost: { kzt: 1600, rub: 300, usd: 3 },
-    pochta: { kzt: 5900, rub: 1000, usd: 12 },
-  }
-  const costs = deliveryCosts[deliveryMethod] || deliveryCosts.cdek
-  const estimatedDeliveryCost = country === 'kz' ? costs.kzt : costs.rub
-  const deliveryCurrency = country === 'kz' ? t.common.price.kzt : t.common.price.rub
+  // Итоговая сумма «к оплате сейчас» в основной валюте страны
+  const payNow =
+    country === 'kz'
+      ? { amount: totalPriceKZT + deliveryFeeKZT, cur: t.common.price.kzt }
+      : country === 'world'
+      ? { amount: totalPriceUSD, cur: t.common.price.usd }
+      : { amount: totalPriceRUB, cur: t.common.price.rub }
 
   const onSubmit = async (data: CheckoutFormData) => {
     setIsSubmitting(true)
-
     try {
       const res = await fetch('/api/orders', {
         method: 'POST',
@@ -118,27 +95,27 @@ export default function CheckoutPage() {
           phone: data.phone,
           email: data.email || '',
           messenger: data.messenger || '',
-          country: country.toUpperCase(),
+          country: countryApi,
           city: data.city,
           address: data.address,
           postalCode: data.postalCode || '',
-          deliveryMethod,
-          paymentMethod: paymentMethod.toUpperCase(),
+          deliveryMethod: country === 'kz' ? 'kazpost' : country === 'ru' ? 'cdek' : 'world',
+          paymentMethod: paymentApi,
           items: items.map((item) => ({
             productId: item.productId,
             productName: PRODUCTS[item.productId].name,
             size: item.size,
+            color: item.color || undefined,
             quantity: item.quantity,
             priceKZT: item.quantity * PRODUCTS[item.productId].priceKZT,
           })),
           totalKZT: totalPriceKZT,
           totalUSD: totalPriceUSD,
           totalRUB: totalPriceRUB,
+          deliveryFeeKZT,
         }),
       })
-
       if (!res.ok) throw new Error('Order failed')
-
       const { orderNumber } = await res.json()
 
       sessionStorage.setItem(
@@ -147,14 +124,16 @@ export default function CheckoutPage() {
           orderNumber,
           items,
           totalPriceKZT,
+          totalPriceUSD,
+          totalPriceRUB,
+          deliveryFeeKZT,
+          country: countryApi,
+          paymentMethod: paymentApi,
           name: data.name,
           phone: data.phone,
           city: data.city,
-          paymentMethod,
         })
       )
-
-      // Save order number to localStorage for tracking
       const savedOrders = JSON.parse(localStorage.getItem('myOrders') || '[]')
       savedOrders.unshift(orderNumber)
       localStorage.setItem('myOrders', JSON.stringify(savedOrders))
@@ -166,448 +145,204 @@ export default function CheckoutPage() {
     }
   }
 
-  if (items.length === 0) {
-    return null
-  }
+  if (items.length === 0) return null
 
   const inputClass = 'bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-white/30'
   const inputErrorClass = 'bg-white/5 border-red-500/50 text-white placeholder:text-white/30 focus:border-red-400'
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <header className="border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-white/70 hover:text-white transition-colors"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              <span className="text-sm">TAWAKKUL</span>
-            </Link>
-            <h1 className="text-lg font-medium">{t.checkout.title}</h1>
-            <div className="w-20" />
-          </div>
+      <header className="border-b border-white/10 sticky top-0 bg-black/90 backdrop-blur-md z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2 text-white/70 hover:text-white transition-colors">
+            <ArrowLeft className="h-4 w-4" />
+            <span className="text-sm">TAWAKKUL</span>
+          </Link>
+          <h1 className="text-lg font-medium">Оформление заказа</h1>
+          <div className="w-20" />
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-12">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
-            {/* Left Column - Form */}
+            {/* ── ЛЕВО: форма ── */}
             <div className="lg:col-span-3 space-y-8">
-              {/* Contact Section */}
-              <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="space-y-6"
-              >
-                <h2 className="text-xl font-medium border-b border-white/10 pb-4">
-                  {t.checkout.contact.title}
-                </h2>
+              {/* Страна */}
+              <section className="space-y-4">
+                <h2 className="text-base font-medium text-white/80">Куда доставить?</h2>
+                <div className="grid grid-cols-3 gap-2.5">
+                  {COUNTRY_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setCountry(opt.value)}
+                      className={`py-3 px-2 text-sm rounded-lg border transition-all ${
+                        country === opt.value
+                          ? 'border-white bg-white/10 text-white'
+                          : 'border-white/10 text-white/60 hover:border-white/30'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </section>
+
+              {/* Контакты */}
+              <section className="space-y-4">
+                <h2 className="text-base font-medium text-white/80 border-b border-white/10 pb-3">Контакты</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="name">{t.checkout.contact.name} *</Label>
-                    <Input
-                      id="name"
-                      {...register('name')}
-                      placeholder={t.checkout.contact.namePlaceholder}
-                      className={errors.name ? inputErrorClass : inputClass}
-                    />
+                    <Label htmlFor="name">ФИО *</Label>
+                    <Input id="name" {...register('name')} placeholder="Иван Иванов" className={errors.name ? inputErrorClass : inputClass} />
                     <FieldError message={errors.name?.message} />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="phone">{t.checkout.contact.phone} *</Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      {...register('phone')}
-                      placeholder={t.checkout.contact.phonePlaceholder}
-                      className={errors.phone ? inputErrorClass : inputClass}
-                    />
+                    <Label htmlFor="phone">Телефон *</Label>
+                    <Input id="phone" type="tel" inputMode="tel" {...register('phone')} placeholder="+7 700 000 00 00" className={errors.phone ? inputErrorClass : inputClass} />
                     <FieldError message={errors.phone?.message} />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="email">{t.checkout.contact.email}</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      {...register('email')}
-                      placeholder={t.checkout.contact.emailPlaceholder}
-                      className={errors.email ? inputErrorClass : inputClass}
-                    />
-                    <FieldError message={errors.email?.message} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="messenger">
-                      {t.checkout.contact.messenger} *
-                    </Label>
-                    <Input
-                      id="messenger"
-                      {...register('messenger')}
-                      placeholder={t.checkout.contact.messengerPlaceholder}
-                      className={errors.messenger ? inputErrorClass : inputClass}
-                    />
+                    <Label htmlFor="messenger">WhatsApp / Telegram *</Label>
+                    <Input id="messenger" {...register('messenger')} placeholder="@username или номер" className={errors.messenger ? inputErrorClass : inputClass} />
                     <FieldError message={errors.messenger?.message} />
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email (необязательно)</Label>
+                    <Input id="email" type="email" inputMode="email" {...register('email')} placeholder="email@example.com" className={errors.email ? inputErrorClass : inputClass} />
+                  </div>
                 </div>
-              </motion.section>
+              </section>
 
-              {/* Delivery Section */}
-              <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-                className="space-y-6"
-              >
-                <h2 className="text-xl font-medium border-b border-white/10 pb-4">
-                  {t.checkout.delivery.title}
-                </h2>
+              {/* Доставка */}
+              <section className="space-y-4">
+                <h2 className="text-base font-medium text-white/80 border-b border-white/10 pb-3">Адрес доставки</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>{t.checkout.delivery.country}</Label>
-                    <Select
-                      value={country}
-                      onValueChange={(v) => handleCountryChange(v as Country)}
-                    >
-                      <SelectTrigger className="bg-white/5 border-white/10 text-white focus:border-white/30">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-black border-white/10">
-                        <SelectItem value="kz" className="text-white">
-                          Казахстан
-                        </SelectItem>
-                        <SelectItem value="ru" className="text-white">
-                          Россия
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Label htmlFor="city">Город *</Label>
+                    <Input id="city" {...register('city')} placeholder="Москва" className={errors.city ? inputErrorClass : inputClass} />
+                    <FieldError message={errors.city?.message} />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="city">{t.checkout.delivery.city} *</Label>
-                    <Input
-                      id="city"
-                      {...register('city')}
-                      placeholder={t.checkout.delivery.cityPlaceholder}
-                      className={errors.city ? inputErrorClass : inputClass}
-                    />
-                    <FieldError message={errors.city?.message} />
+                    <Label htmlFor="postalCode">Индекс</Label>
+                    <Input id="postalCode" inputMode="numeric" {...register('postalCode')} placeholder="101000" className={inputClass} />
                   </div>
                   <div className="space-y-2 sm:col-span-2">
                     <Label htmlFor="address">
-                      {t.checkout.delivery.address} *
+                      {country === 'ru' ? 'Адрес / пункт выдачи СДЭК *' : country === 'kz' ? 'Адрес (Казпочта) *' : 'Полный адрес *'}
                     </Label>
-                    <Input
-                      id="address"
-                      {...register('address')}
-                      placeholder={t.checkout.delivery.addressPlaceholder}
-                      className={errors.address ? inputErrorClass : inputClass}
-                    />
+                    <Input id="address" {...register('address')} placeholder="Улица, дом, квартира" className={errors.address ? inputErrorClass : inputClass} />
                     <FieldError message={errors.address?.message} />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="postalCode">
-                      {t.checkout.delivery.postalCode}
-                    </Label>
-                    <Input
-                      id="postalCode"
-                      {...register('postalCode')}
-                      placeholder={t.checkout.delivery.postalCodePlaceholder}
-                      className={inputClass}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>{t.checkout.delivery.method}</Label>
-                    <Select
-                      value={deliveryMethod}
-                      onValueChange={setDeliveryMethod}
-                    >
-                      <SelectTrigger className="bg-white/5 border-white/10 text-white focus:border-white/30">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-black border-white/10">
-                        {deliveryMethods[country].map((method) => (
-                          <SelectItem
-                            key={method}
-                            value={method}
-                            className="text-white"
-                          >
-                            {t.checkout.delivery.methods[method]}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                </div>
+
+                {/* Инфо по доставке */}
+                <div className="flex items-start gap-3 p-4 bg-white/5 border border-white/10 rounded-lg">
+                  <Truck className="h-5 w-5 text-white/50 flex-shrink-0 mt-0.5" />
+                  <div className="text-sm text-white/70 leading-relaxed">
+                    {country === 'ru' && (
+                      <>Доставка <b>СДЭК</b> по всей России (срок ~до недели, ин ша Аллах). Доставку (~700–1000 ₽) вы оплачиваете <b>при получении</b> — на сайте платите только за товар.</>
+                    )}
+                    {country === 'kz' && (
+                      <>Доставка <b>Казпочтой</b> по Казахстану (срок ~до недели, ин ша Аллах). Стоимость доставки <b>+{fmt(KZ_DELIVERY_FEE, t.common.price.kzt)}</b> — включена в сумму к оплате.</>
+                    )}
+                    {country === 'world' && (
+                      <>Доставка по миру. Стоимость доставки рассчитаем индивидуально и согласуем с вами в <b>WhatsApp / Telegram</b> после оформления. Сейчас оплачивается только товар.</>
+                    )}
                   </div>
                 </div>
-                <div className="p-4 bg-white/5 rounded-lg">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-white/70">
-                      {t.checkout.delivery.cost}
-                    </span>
-                    <span>~{formatPrice(estimatedDeliveryCost, deliveryCurrency)}</span>
+              </section>
+
+              {/* Оплата (инфо) */}
+              <section className="space-y-3">
+                <h2 className="text-base font-medium text-white/80 border-b border-white/10 pb-3">Оплата</h2>
+                <div className="flex items-start gap-3 p-4 bg-white/5 border border-white/10 rounded-lg">
+                  <Info className="h-5 w-5 text-white/50 flex-shrink-0 mt-0.5" />
+                  <div className="text-sm text-white/70 leading-relaxed">
+                    {country === 'ru' && <>Оплата переводом на карту <b>ВТБ (МИР)</b>. Реквизиты появятся на следующем шаге — оплатите и пришлите чек в WhatsApp / Telegram.</>}
+                    {country === 'kz' && <>Оплата через <b>Kaspi</b> по ссылке. Появится на следующем шаге — оплатите и пришлите чек в WhatsApp / Telegram.</>}
+                    {country === 'world' && <>Оплата переводом на карту <b>Kaspi</b> (в долларах). Реквизиты появятся на следующем шаге — оплатите и пришлите чек в WhatsApp / Telegram.</>}
                   </div>
-                  <p className="text-xs text-white/40 mt-2">
-                    {t.checkout.delivery.costNote}
-                  </p>
-                  <p className="text-xs text-white/50 mt-1">
-                    {t.checkout.delivery.estimatedTime}
-                  </p>
                 </div>
-                {deliveryMethod === 'cdek' && (
-                  <div className="flex items-start gap-3 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
-                    <AlertTriangle className="h-5 w-5 text-amber-400 flex-shrink-0 mt-0.5" />
-                    <p className="text-sm text-amber-200 font-medium">
-                      {t.checkout.delivery.cdekWarning}
-                    </p>
-                  </div>
-                )}
-                {deliveryMethod === 'kazpost' && (
-                  <div className="flex items-start gap-3 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
-                    <Truck className="h-5 w-5 text-emerald-400 flex-shrink-0 mt-0.5" />
-                    <p className="text-sm text-emerald-200 font-medium">
-                      {t.checkout.delivery.kazpostWarning}
-                    </p>
-                  </div>
-                )}
-              </motion.section>
-
-              {/* Payment Section */}
-              <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="space-y-6"
-              >
-                <h2 className="text-xl font-medium border-b border-white/10 pb-4">
-                  {t.checkout.payment.title}
-                </h2>
-                <RadioGroup
-                  value={paymentMethod}
-                  onValueChange={(v) => setPaymentMethod(v as PaymentMethod)}
-                  className="space-y-3"
-                >
-                  <label
-                    htmlFor="kaspi"
-                    className={`flex items-start gap-4 p-4 rounded-lg border cursor-pointer transition-colors ${
-                      paymentMethod === 'kaspi'
-                        ? 'border-white bg-white/5'
-                        : 'border-white/10 hover:border-white/30'
-                    }`}
-                  >
-                    <RadioGroupItem value="kaspi" id="kaspi" className="mt-1" />
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3">
-                        <span className="font-medium">{t.checkout.payment.kaspiTitle}</span>
-                        <span className="text-xs px-2 py-0.5 bg-[#F14635] text-white rounded">
-                          {t.checkout.payment.kaspiSubtitle}
-                        </span>
-                      </div>
-                      <p className="text-sm text-white/50 mt-1">
-                        {t.checkout.payment.kaspiDescription}
-                      </p>
-                    </div>
-                  </label>
-
-                  <label
-                    htmlFor="vtb"
-                    className={`flex items-start gap-4 p-4 rounded-lg border cursor-pointer transition-colors ${
-                      paymentMethod === 'vtb'
-                        ? 'border-white bg-white/5'
-                        : 'border-white/10 hover:border-white/30'
-                    }`}
-                  >
-                    <RadioGroupItem value="vtb" id="vtb" className="mt-1" />
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3">
-                        <span className="font-medium">{t.checkout.payment.vtbTitle}</span>
-                        <span className="text-xs px-2 py-0.5 bg-[#009FDF] text-white rounded">
-                          {t.checkout.payment.vtbSubtitle}
-                        </span>
-                      </div>
-                      <p className="text-sm text-white/50 mt-1">
-                        {t.checkout.payment.vtbDescription}
-                      </p>
-                    </div>
-                  </label>
-                </RadioGroup>
-              </motion.section>
+              </section>
             </div>
 
-            {/* Right Column - Order Summary */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="lg:col-span-2"
-            >
-              <div className="sticky top-8 space-y-6 p-6 bg-white/5 rounded-lg border border-white/10">
-                <h2 className="text-xl font-medium">
-                  {t.checkout.summary.title}
-                </h2>
+            {/* ── ПРАВО: итог ── */}
+            <div className="lg:col-span-2">
+              <div className="lg:sticky lg:top-24 space-y-5 p-5 sm:p-6 bg-white/5 rounded-xl border border-white/10">
+                <h2 className="text-lg font-medium">Ваш заказ</h2>
 
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {items.map((item) => {
                     const product = PRODUCTS[item.productId]
                     return (
-                    <div key={`${item.productId}-${item.size}`} className="flex gap-3 p-3 bg-white/5 rounded-lg">
-                      <div className="w-14 h-18 relative flex-shrink-0 overflow-hidden rounded">
-                        <Image
-                          src={product.thumb}
-                          alt={product.name}
-                          fill
-                          className="object-cover"
-                          sizes="56px"
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0 space-y-2">
-                        <div className="flex items-start justify-between gap-2">
-                          <h3 className="text-sm font-medium truncate">
-                            {product.name}
-                          </h3>
-                          <button
-                            type="button"
-                            onClick={() => removeItem(item.productId, item.size)}
-                            className="text-white/30 hover:text-red-400 transition-colors flex-shrink-0"
-                            aria-label={t.cart.remove}
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
+                      <div key={`${item.productId}-${item.size}-${item.color ?? ''}`} className="flex gap-3">
+                        <div className="w-14 h-16 relative flex-shrink-0 overflow-hidden rounded bg-white/5">
+                          <Image src={product.thumb} alt={product.name} fill className="object-cover" sizes="56px" />
                         </div>
-
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-white/50">{t.cart.size}:</span>
-                          <div className="flex gap-1">
-                            {product.sizes.map((size) => (
-                              <button
-                                key={size}
-                                type="button"
-                                onClick={() => {
-                                  if (size !== item.size) {
-                                    const qty = item.quantity
-                                    removeItem(item.productId, item.size)
-                                    addItem(item.productId, size, qty)
-                                  }
-                                }}
-                                className={`text-[10px] px-1.5 py-0.5 rounded border transition-colors ${
-                                  size === item.size
-                                    ? 'border-white bg-white text-black'
-                                    : 'border-white/20 text-white/50 hover:border-white/40'
-                                }`}
-                              >
-                                {size}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <button
-                              type="button"
-                              onClick={() => updateQuantity(item.productId, item.size, item.quantity - 1)}
-                              className="w-6 h-6 flex items-center justify-center rounded border border-white/20 text-white/50 hover:border-white/40 hover:text-white transition-colors"
-                              aria-label={t.cart.decreaseQty}
-                            >
-                              <Minus className="h-3 w-3" />
-                            </button>
-                            <span className="text-sm w-5 text-center">{item.quantity}</span>
-                            <button
-                              type="button"
-                              onClick={() => updateQuantity(item.productId, item.size, item.quantity + 1)}
-                              className="w-6 h-6 flex items-center justify-center rounded border border-white/20 text-white/50 hover:border-white/40 hover:text-white transition-colors"
-                              aria-label={t.cart.increaseQty}
-                            >
-                              <Plus className="h-3 w-3" />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2">
+                            <h3 className="text-sm font-medium leading-tight">{product.name}</h3>
+                            <button type="button" onClick={() => removeItem(item.productId, item.size, item.color)} className="text-white/30 hover:text-red-400 flex-shrink-0" aria-label="Удалить">
+                              <Trash2 className="h-3.5 w-3.5" />
                             </button>
                           </div>
-                          <span className="text-sm font-medium">
-                            {formatPrice(item.quantity * product.priceKZT, t.common.price.kzt)}
-                          </span>
+                          <p className="text-xs text-white/40 mt-0.5">
+                            {t.cart.size}: {item.size}{item.color ? ` · ${COLOR_LABEL_RU[item.color]}` : ''}
+                          </p>
+                          <div className="flex items-center justify-between mt-2">
+                            <div className="flex items-center gap-2">
+                              <button type="button" onClick={() => updateQuantity(item.productId, item.size, item.quantity - 1, item.color)} className="w-6 h-6 flex items-center justify-center rounded border border-white/20 text-white/60 hover:border-white/40" aria-label="−"><Minus className="h-3 w-3" /></button>
+                              <span className="text-sm w-5 text-center">{item.quantity}</span>
+                              <button type="button" onClick={() => updateQuantity(item.productId, item.size, item.quantity + 1, item.color)} className="w-6 h-6 flex items-center justify-center rounded border border-white/20 text-white/60 hover:border-white/40" aria-label="+"><Plus className="h-3 w-3" /></button>
+                            </div>
+                            <span className="text-sm font-medium">{fmt(item.quantity * product.priceRUB, t.common.price.rub)}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
                     )
                   })}
                 </div>
 
-                <div className="border-t border-white/10 pt-4 space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-white/70">
-                      {t.checkout.summary.product}
-                    </span>
-                    <span>{formatPrice(totalPriceKZT, t.common.price.kzt)}</span>
+                <div className="border-t border-white/10 pt-4 space-y-2.5 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-white/60">Товары</span>
+                    <span>{fmt(totalPriceRUB, t.common.price.rub)}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-white/70">
-                      {t.checkout.summary.delivery}
+                  <div className="flex justify-between">
+                    <span className="text-white/60">Доставка</span>
+                    <span className="text-right text-white/70">
+                      {country === 'ru' && 'при получении'}
+                      {country === 'kz' && `+${fmt(KZ_DELIVERY_FEE, t.common.price.kzt)}`}
+                      {country === 'world' && 'согласуем'}
                     </span>
-                    {deliveryMethod === 'kazpost' ? (
-                      <span>{formatPrice(costs.kzt, t.common.price.kzt)}</span>
-                    ) : (
-                      <span className="text-white/50">
-                        {t.checkout.summary.deliveryCalculating}
-                      </span>
-                    )}
                   </div>
                 </div>
 
                 <div className="border-t border-white/10 pt-4">
-                  <div className="flex justify-between">
-                    <span className="text-lg font-medium">
-                      {t.checkout.summary.total}
-                    </span>
+                  <div className="flex items-end justify-between">
+                    <span className="text-base font-medium">К оплате сейчас</span>
                     <div className="text-right">
-                      <span className="text-lg font-medium">
-                        {formatPrice(
-                          totalPriceKZT + (deliveryMethod === 'kazpost' ? costs.kzt : 0),
-                          t.common.price.kzt
-                        )}
-                      </span>
-                      <p className="text-xs text-white/40">
-                        ({formatPrice(
-                          totalPriceUSD + (deliveryMethod === 'kazpost' ? costs.usd : 0),
-                          t.common.price.usd
-                        )} /{' '}
-                        {formatPrice(
-                          totalPriceRUB + (deliveryMethod === 'kazpost' ? costs.rub : 0),
-                          t.common.price.rub
-                        )})
+                      <span className="text-2xl font-semibold tabular-nums">{fmt(payNow.amount, payNow.cur)}</span>
+                      <p className="text-[11px] text-white/40 mt-0.5">
+                        {fmt(totalPriceKZT + deliveryFeeKZT, t.common.price.kzt)} · {fmt(totalPriceUSD, t.common.price.usd)}
                       </p>
                     </div>
                   </div>
+                  {country === 'ru' && (
+                    <p className="text-[11px] text-white/40 mt-2">Доставка СДЭК оплачивается отдельно при получении.</p>
+                  )}
                 </div>
 
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-white text-black hover:bg-white/90 py-6 text-base font-medium disabled:opacity-50"
-                >
-                  {isSubmitting ? '...' : t.checkout.summary.submit}
+                <Button type="submit" disabled={isSubmitting} className="w-full bg-white text-black hover:bg-white/90 py-6 text-base font-medium disabled:opacity-50">
+                  {isSubmitting ? '...' : 'Оформить заказ'}
                 </Button>
-
-                <div className="grid grid-cols-3 gap-2 pt-2">
-                  <div className="flex flex-col items-center text-center gap-1">
-                    <Shield className="h-4 w-4 text-white/40" />
-                    <span className="text-[10px] text-white/40">
-                      {t.checkout.trust.secure}
-                    </span>
-                  </div>
-                  <div className="flex flex-col items-center text-center gap-1">
-                    <Truck className="h-4 w-4 text-white/40" />
-                    <span className="text-[10px] text-white/40">
-                      {t.checkout.trust.delivery}
-                    </span>
-                  </div>
-                  <div className="flex flex-col items-center text-center gap-1">
-                    <RotateCcw className="h-4 w-4 text-white/40" />
-                    <span className="text-[10px] text-white/40">
-                      {t.checkout.trust.return}
-                    </span>
-                  </div>
-                </div>
+                <p className="text-[11px] text-white/40 text-center leading-relaxed">
+                  После оформления вы получите номер заказа и реквизиты для оплаты. Оплату подтверждаете чеком в WhatsApp / Telegram.
+                </p>
               </div>
-            </motion.div>
+            </div>
           </div>
         </form>
       </main>

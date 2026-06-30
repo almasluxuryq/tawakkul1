@@ -10,7 +10,7 @@ const createOrderSchema = z.object({
   phone: z.string().min(7),
   email: z.string().email().optional().or(z.literal('')),
   messenger: z.string().optional(),
-  country: z.enum(['KZ', 'RU']),
+  country: z.enum(['KZ', 'RU', 'WORLD']),
   city: z.string().min(1),
   address: z.string().min(1),
   postalCode: z.string().optional(),
@@ -20,12 +20,14 @@ const createOrderSchema = z.object({
     productId: z.string().min(1),
     productName: z.string().min(1),
     size: z.string(),
+    color: z.string().optional(),
     quantity: z.number().int().positive(),
     priceKZT: z.number().int().positive(),
   })).min(1),
   totalKZT: z.number().int().positive(),
   totalUSD: z.number().int().positive(),
   totalRUB: z.number().int().positive(),
+  deliveryFeeKZT: z.number().int().nonnegative().optional(),
 })
 
 async function generateOrderNumber(name: string): Promise<string> {
@@ -71,11 +73,13 @@ export async function POST(request: NextRequest) {
         totalKZT: data.totalKZT,
         totalUSD: data.totalUSD,
         totalRUB: data.totalRUB,
+        deliveryFeeKZT: data.deliveryFeeKZT ?? 0,
         items: {
           create: data.items.map((item) => ({
             productId: item.productId,
             productName: item.productName,
             size: item.size,
+            color: item.color || null,
             quantity: item.quantity,
             priceKZT: item.priceKZT,
           })),

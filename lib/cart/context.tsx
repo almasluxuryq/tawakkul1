@@ -1,22 +1,23 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { PRODUCTS, ProductId, Size, isProductId } from './products'
+import { PRODUCTS, ProductId, Size, Color, isProductId } from './products'
 
-export type { Size, ProductId, Product } from './products'
-export { PRODUCTS, PRODUCT_LIST, getProduct, getProductBySlug } from './products'
+export type { Size, ProductId, Product, Color } from './products'
+export { PRODUCTS, PRODUCT_LIST, getProduct, getProductBySlug, SHORTS_COLOR_IMAGE } from './products'
 
 export interface CartItem {
   productId: ProductId
   size: Size
   quantity: number
+  color?: Color
 }
 
 interface CartContextType {
   items: CartItem[]
-  addItem: (productId: ProductId, size: Size, quantity?: number) => void
-  removeItem: (productId: ProductId, size: Size) => void
-  updateQuantity: (productId: ProductId, size: Size, quantity: number) => void
+  addItem: (productId: ProductId, size: Size, quantity?: number, color?: Color) => void
+  removeItem: (productId: ProductId, size: Size, color?: Color) => void
+  updateQuantity: (productId: ProductId, size: Size, quantity: number, color?: Color) => void
   clearCart: () => void
   totalItems: number
   totalPriceKZT: number
@@ -30,6 +31,9 @@ const CartContext = createContext<CartContextType | undefined>(undefined)
 
 const STORAGE_KEY = 'tawakkul-cart'
 
+const VALID_COLORS: Color[] = ['BLACK', 'NAVY', 'GREY']
+const isColor = (v: unknown): v is Color => typeof v === 'string' && (VALID_COLORS as string[]).includes(v)
+
 // Normalizes stored items, including the legacy single-product shape `{ id, size, quantity }`.
 function normalizeStoredItems(raw: unknown): CartItem[] {
   if (!Array.isArray(raw)) return []
@@ -41,13 +45,14 @@ function normalizeStoredItems(raw: unknown): CartItem[] {
     if (typeof productId !== 'string' || !isProductId(productId)) continue
     if (typeof e.size !== 'string') continue
     const quantity = typeof e.quantity === 'number' && e.quantity > 0 ? e.quantity : 1
-    result.push({ productId, size: e.size as Size, quantity })
+    const color = isColor(e.color) ? e.color : undefined
+    result.push({ productId, size: e.size as Size, quantity, color })
   }
   return result
 }
 
-const sameLine = (item: CartItem, productId: ProductId, size: Size) =>
-  item.productId === productId && item.size === size
+const sameLine = (item: CartItem, productId: ProductId, size: Size, color?: Color) =>
+  item.productId === productId && item.size === size && item.color === color
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
@@ -72,32 +77,32 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [items, isHydrated])
 
-  const addItem = (productId: ProductId, size: Size, quantity = 1) => {
+  const addItem = (productId: ProductId, size: Size, quantity = 1, color?: Color) => {
     setItems((prev) => {
-      const existing = prev.find((item) => sameLine(item, productId, size))
+      const existing = prev.find((item) => sameLine(item, productId, size, color))
       if (existing) {
         return prev.map((item) =>
-          sameLine(item, productId, size)
+          sameLine(item, productId, size, color)
             ? { ...item, quantity: item.quantity + quantity }
             : item
         )
       }
-      return [...prev, { productId, size, quantity }]
+      return [...prev, { productId, size, quantity, color }]
     })
   }
 
-  const removeItem = (productId: ProductId, size: Size) => {
-    setItems((prev) => prev.filter((item) => !sameLine(item, productId, size)))
+  const removeItem = (productId: ProductId, size: Size, color?: Color) => {
+    setItems((prev) => prev.filter((item) => !sameLine(item, productId, size, color)))
   }
 
-  const updateQuantity = (productId: ProductId, size: Size, quantity: number) => {
+  const updateQuantity = (productId: ProductId, size: Size, quantity: number, color?: Color) => {
     if (quantity <= 0) {
-      removeItem(productId, size)
+      removeItem(productId, size, color)
       return
     }
     setItems((prev) =>
       prev.map((item) =>
-        sameLine(item, productId, size) ? { ...item, quantity } : item
+        sameLine(item, productId, size, color) ? { ...item, quantity } : item
       )
     )
   }
@@ -140,4 +145,11 @@ export function useCart() {
     throw new Error('useCart must be used within a CartProvider')
   }
   return context
+}
+
+/** Russian label for a color, e.g. for cart/checkout/order display. */
+export const COLOR_LABEL_RU: Record<Color, string> = {
+  BLACK: 'Чёрный',
+  NAVY: 'Синий',
+  GREY: 'Серый',
 }

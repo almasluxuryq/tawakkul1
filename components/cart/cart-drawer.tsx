@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import { X, Minus, Plus, Trash2, ShoppingBag } from 'lucide-react'
 import { useI18n } from '@/lib/i18n/context'
-import { useCart, PRODUCTS } from '@/lib/cart/context'
+import { useCart, PRODUCTS, COLOR_LABEL_RU } from '@/lib/cart/context'
 import { Button } from '@/components/ui/button'
 import { useIsMobile } from '@/hooks/use-mobile'
 
@@ -97,7 +97,7 @@ export function CartDrawer() {
                       const product = PRODUCTS[item.productId]
                       return (
                         <div
-                          key={`${item.productId}-${item.size}`}
+                          key={`${item.productId}-${item.size}-${item.color ?? ''}`}
                           className="flex gap-4 p-3 bg-white/5 rounded-lg"
                         >
                           <div className="w-20 h-24 relative flex-shrink-0 overflow-hidden">
@@ -118,12 +118,17 @@ export function CartDrawer() {
                             <p className="text-xs text-white/50 mt-1">
                               {t.cart.size}: {item.size}
                             </p>
+                            {item.color && (
+                              <p className="text-xs text-white/50">
+                                {t.shorts.color}: {COLOR_LABEL_RU[item.color]}
+                              </p>
+                            )}
 
                             {/* Quantity controls */}
                             <div className="flex items-center gap-2 mt-3">
                               <button
                                 onClick={() =>
-                                  updateQuantity(item.productId, item.size, item.quantity - 1)
+                                  updateQuantity(item.productId, item.size, item.quantity - 1, item.color)
                                 }
                                 aria-label={t.cart.decreaseQty}
                                 className="w-7 h-7 border border-white/20 flex items-center justify-center rounded hover:border-white/40"
@@ -135,7 +140,7 @@ export function CartDrawer() {
                               </span>
                               <button
                                 onClick={() =>
-                                  updateQuantity(item.productId, item.size, item.quantity + 1)
+                                  updateQuantity(item.productId, item.size, item.quantity + 1, item.color)
                                 }
                                 aria-label={t.cart.increaseQty}
                                 className="w-7 h-7 border border-white/20 flex items-center justify-center rounded hover:border-white/40"
@@ -148,7 +153,7 @@ export function CartDrawer() {
                           {/* Price and remove */}
                           <div className="flex flex-col items-end justify-between">
                             <button
-                              onClick={() => removeItem(item.productId, item.size)}
+                              onClick={() => removeItem(item.productId, item.size, item.color)}
                               className="text-white/30 hover:text-white/70"
                               aria-label={t.cart.remove}
                             >
@@ -156,8 +161,8 @@ export function CartDrawer() {
                             </button>
                             <span className="text-sm">
                               {formatPrice(
-                                item.quantity * product.priceKZT,
-                                t.common.price.kzt
+                                item.quantity * product.priceRUB,
+                                t.common.price.rub
                               )}
                             </span>
                           </div>
@@ -175,11 +180,11 @@ export function CartDrawer() {
                     <span className="text-white/70">{t.cart.subtotal}</span>
                     <div className="text-right">
                       <span className="text-lg font-medium">
-                        {formatPrice(totalPriceKZT, t.common.price.kzt)}
+                        {formatPrice(totalPriceRUB, t.common.price.rub)}
                       </span>
                       <p className="text-xs text-white/40">
-                        ({formatPrice(totalPriceUSD, t.common.price.usd)} /{' '}
-                        {formatPrice(totalPriceRUB, t.common.price.rub)})
+                        ({formatPrice(totalPriceKZT, t.common.price.kzt)} /{' '}
+                        {formatPrice(totalPriceUSD, t.common.price.usd)})
                       </p>
                     </div>
                   </div>
@@ -239,7 +244,7 @@ export function CartDrawer() {
                       const product = PRODUCTS[item.productId]
                       return (
                         <div
-                          key={`${item.productId}-${item.size}`}
+                          key={`${item.productId}-${item.size}-${item.color ?? ''}`}
                           className="flex gap-4 p-4 bg-white/5 rounded-lg"
                         >
                           <div className="w-24 h-28 relative flex-shrink-0 overflow-hidden">
@@ -258,12 +263,17 @@ export function CartDrawer() {
                             <p className="text-sm text-white/50 mt-1">
                               {t.cart.size}: {item.size}
                             </p>
+                            {item.color && (
+                              <p className="text-sm text-white/50">
+                                {t.shorts.color}: {COLOR_LABEL_RU[item.color]}
+                              </p>
+                            )}
 
                             {/* Quantity controls */}
                             <div className="flex items-center gap-3 mt-4">
                               <button
                                 onClick={() =>
-                                  updateQuantity(item.productId, item.size, item.quantity - 1)
+                                  updateQuantity(item.productId, item.size, item.quantity - 1, item.color)
                                 }
                                 aria-label={t.cart.decreaseQty}
                                 className="w-8 h-8 border border-white/20 flex items-center justify-center hover:border-white/40 transition-colors"
@@ -275,7 +285,7 @@ export function CartDrawer() {
                               </span>
                               <button
                                 onClick={() =>
-                                  updateQuantity(item.productId, item.size, item.quantity + 1)
+                                  updateQuantity(item.productId, item.size, item.quantity + 1, item.color)
                                 }
                                 aria-label={t.cart.increaseQty}
                                 className="w-8 h-8 border border-white/20 flex items-center justify-center hover:border-white/40 transition-colors"
@@ -288,7 +298,7 @@ export function CartDrawer() {
                           {/* Price and remove */}
                           <div className="flex flex-col items-end justify-between">
                             <button
-                              onClick={() => removeItem(item.productId, item.size)}
+                              onClick={() => removeItem(item.productId, item.size, item.color)}
                               className="text-white/30 hover:text-white/70 transition-colors"
                               aria-label={t.cart.remove}
                             >
@@ -296,8 +306,8 @@ export function CartDrawer() {
                             </button>
                             <span className="font-medium">
                               {formatPrice(
-                                item.quantity * product.priceKZT,
-                                t.common.price.kzt
+                                item.quantity * product.priceRUB,
+                                t.common.price.rub
                               )}
                             </span>
                           </div>
@@ -317,11 +327,11 @@ export function CartDrawer() {
                     </span>
                     <div className="text-right">
                       <span className="text-xl font-medium">
-                        {formatPrice(totalPriceKZT, t.common.price.kzt)}
+                        {formatPrice(totalPriceRUB, t.common.price.rub)}
                       </span>
                       <p className="text-sm text-white/40">
-                        ({formatPrice(totalPriceUSD, t.common.price.usd)} /{' '}
-                        {formatPrice(totalPriceRUB, t.common.price.rub)})
+                        ({formatPrice(totalPriceKZT, t.common.price.kzt)} /{' '}
+                        {formatPrice(totalPriceUSD, t.common.price.usd)})
                       </p>
                     </div>
                   </div>

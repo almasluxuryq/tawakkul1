@@ -12,13 +12,15 @@ interface OrderWithItems {
   paymentMethod: string
   totalKZT: number
   totalRUB: number
-  items: Array<{ productName: string; size: string; quantity: number; priceKZT: number }>
+  deliveryFeeKZT?: number
+  items: Array<{ productName: string; size: string; color?: string | null; quantity: number; priceKZT: number }>
 }
 
 const deliveryMethodNames: Record<string, string> = {
   cdek: 'СДЭК',
   kazpost: 'КазПочта',
   pochta: 'Почта России',
+  world: 'Согласуем в WA/TG',
 }
 
 const paymentMethodNames: Record<string, string> = {
@@ -29,6 +31,13 @@ const paymentMethodNames: Record<string, string> = {
 const countryNames: Record<string, string> = {
   KZ: 'Казахстан',
   RU: 'Россия',
+  WORLD: 'Другая страна',
+}
+
+const colorNames: Record<string, string> = {
+  BLACK: 'Чёрный',
+  NAVY: 'Синий',
+  GREY: 'Серый',
 }
 
 export async function notifyNewOrder(order: OrderWithItems) {
@@ -38,7 +47,7 @@ export async function notifyNewOrder(order: OrderWithItems) {
   if (!botToken || !chatId) return
 
   const items = order.items
-    .map((i) => `  ${i.productName} · ${i.size} x${i.quantity} — ${i.priceKZT.toLocaleString('ru-RU')} ₸`)
+    .map((i) => `  ${i.productName} · ${i.size}${i.color ? ', ' + (colorNames[i.color] || i.color) : ''} x${i.quantity} — ${i.priceKZT.toLocaleString('ru-RU')} ₸`)
     .join('\n')
 
   const lines = [
@@ -63,8 +72,11 @@ export async function notifyNewOrder(order: OrderWithItems) {
 
   if (order.postalCode) lines.push(`📮 Индекс: ${order.postalCode}`)
 
+  lines.push(`🚚 ${deliveryMethodNames[order.deliveryMethod] || order.deliveryMethod}`)
+  if (order.deliveryFeeKZT && order.deliveryFeeKZT > 0) {
+    lines.push(`   доставка +${order.deliveryFeeKZT.toLocaleString('ru-RU')} ₸`)
+  }
   lines.push(
-    `🚚 ${deliveryMethodNames[order.deliveryMethod] || order.deliveryMethod}`,
     ``,
     `*Оплата:*`,
     `💳 ${paymentMethodNames[order.paymentMethod] || order.paymentMethod}`,
@@ -72,7 +84,7 @@ export async function notifyNewOrder(order: OrderWithItems) {
     `*Товары:*`,
     items,
     ``,
-    `*Итого: ${order.totalKZT.toLocaleString('ru-RU')} ₸ / ${order.totalRUB.toLocaleString('ru-RU')} ₽*`,
+    `*Итого: ${order.totalRUB.toLocaleString('ru-RU')} ₽ / ${order.totalKZT.toLocaleString('ru-RU')} ₸*`,
   )
 
   const text = lines.join('\n')

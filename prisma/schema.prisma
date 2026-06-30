@@ -25,6 +25,7 @@ enum PaymentMethod {
 enum Country {
   KZ
   RU
+  WORLD
 }
 
 model Order {
@@ -58,6 +59,7 @@ model Order {
   totalKZT        Int
   totalUSD        Int
   totalRUB        Int
+  deliveryFeeKZT  Int           @default(0)
 
   @@index([orderNumber])
   @@index([phone])
@@ -71,6 +73,7 @@ model OrderItem {
   productId   String @default("one-ummah-zip-hoodie")
   productName String @default("ONE UMMAH ZIP HOODIE")
   size        String
+  color       String?
   quantity    Int
   priceKZT    Int
 

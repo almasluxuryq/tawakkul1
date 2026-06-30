@@ -7,8 +7,8 @@ import { motion, useInView } from 'framer-motion'
 import { ArrowLeft, Bell, Minus, Plus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useI18n } from '@/lib/i18n/context'
-import { useCart } from '@/lib/cart/context'
-import { Product, Size, Color } from '@/lib/cart/products'
+import { useCart, COLOR_LABEL_RU } from '@/lib/cart/context'
+import { Product, Size, Color, SHORTS_COLOR_IMAGE } from '@/lib/cart/products'
 import { Button } from '@/components/ui/button'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
@@ -156,13 +156,19 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
     touchStartY.current = null
   }
 
+  const handleSelectColor = (color: Color) => {
+    setSelectedColor(color)
+    const idx = product.gallery.indexOf(SHORTS_COLOR_IMAGE[color])
+    if (idx >= 0) setActiveImage(idx)
+  }
+
   const handleAddToCart = () => {
-    addItem(product.id, selectedSize, quantity)
+    addItem(product.id, selectedSize, quantity, selectedColor ?? undefined)
     setIsCartOpen(true)
   }
 
   const handleBuyNow = () => {
-    addItem(product.id, selectedSize, quantity)
+    addItem(product.id, selectedSize, quantity, selectedColor ?? undefined)
     router.push('/checkout')
   }
 
@@ -490,12 +496,47 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
                   <>
                     <div>
                       <span className="font-display text-3xl font-light tabular-nums">
-                        {formatPrice(product.priceKZT, t.common.price.kzt)}
+                        {formatPrice(product.priceRUB, t.common.price.rub)}
                       </span>
                       <p className="text-sm text-white/40 mt-1">
-                        {formatPrice(product.priceUSD, t.common.price.usd)} · {formatPrice(product.priceRUB, t.common.price.rub)}
+                        {formatPrice(product.priceKZT, t.common.price.kzt)} · {formatPrice(product.priceUSD, t.common.price.usd)}
                       </p>
                     </div>
+
+                    {product.colors && (
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs tracking-[0.15em] uppercase text-white/50">{t.shorts.color}</span>
+                          {selectedColor && (
+                            <span className="text-xs text-white/40">{COLOR_LABEL_RU[selectedColor]}</span>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-3 gap-2.5">
+                          {product.colors.map((color) => (
+                            <button
+                              key={color}
+                              type="button"
+                              onClick={() => handleSelectColor(color)}
+                              className={`relative flex flex-col items-center gap-2 py-3.5 transition-all duration-200 ${
+                                selectedColor === color
+                                  ? 'ring-1 ring-white bg-white/5'
+                                  : 'border border-white/10 hover:border-white/30'
+                              }`}
+                            >
+                              <span
+                                className="w-8 h-8 rounded-full border-2 border-white/10"
+                                style={{ backgroundColor: COLOR_HEX[color] }}
+                              />
+                              <span className={`text-[10px] font-medium tracking-[0.1em] uppercase ${
+                                selectedColor === color ? 'text-white' : 'text-white/40'
+                              }`}>
+                                {COLOR_LABEL_RU[color]}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
@@ -557,17 +598,17 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
                       ) : (
                         <>
                           <Button
-                            onClick={handleAddToCart}
+                            onClick={handleBuyNow}
                             className="w-full bg-white text-black hover:bg-white/90 py-6 text-sm font-medium transition-colors"
                           >
-                            {isPreorder ? t.status.preorderCta : t.quickOrder.addToCart}
+                            {t.quickOrder.buyNow}
                           </Button>
                           <Button
-                            onClick={handleBuyNow}
+                            onClick={handleAddToCart}
                             variant="outline"
                             className="w-full border-white/15 text-white hover:bg-white hover:text-black py-6 text-sm transition-colors"
                           >
-                            {t.quickOrder.buyNow}
+                            {isPreorder ? t.status.preorderCta : t.quickOrder.addToCart}
                           </Button>
                         </>
                       )}
@@ -650,7 +691,7 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
         ) : (
           <div className="flex items-center justify-between px-4 py-3 gap-4">
             <div>
-              <p className="text-base font-light tabular-nums">{formatPrice(product.priceKZT, t.common.price.kzt)}</p>
+              <p className="text-base font-light tabular-nums">{formatPrice(product.priceRUB, t.common.price.rub)}</p>
               <p className="text-[10px] text-white/35">{selectedSize} · {quantity} {t.cart.pieces}</p>
             </div>
             {isSoldOut ? (
@@ -659,10 +700,10 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
               </Button>
             ) : (
               <Button
-                onClick={handleAddToCart}
+                onClick={handleBuyNow}
                 className="bg-white text-black hover:bg-white/90 px-8 font-medium"
               >
-                {isPreorder ? t.status.preorderCta : t.quickOrder.addToCart}
+                {t.quickOrder.buyNow}
               </Button>
             )}
           </div>

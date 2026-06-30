@@ -37,10 +37,10 @@ export const PRODUCTS: Record<ProductId, Product> = {
     priceRUB: 3990,
     sizes: ['S', 'M', 'L', 'XL'],
     status: 'available',
-    thumb: '/photos/IMG_2515.JPEG',
+    thumb: '/photos/photo_7_2026-06-07_15-25-24.jpg',
     gallery: [
-      '/photos/IMG_2515.JPEG',
       '/photos/photo_7_2026-06-07_15-25-24.jpg',
+      '/photos/IMG_2515.JPEG',
       '/photos/IMG_5516 (2).JPG',
       '/photos/IMG_5735 (2).JPEG',
     ],
@@ -50,18 +50,20 @@ export const PRODUCTS: Record<ProductId, Product> = {
     id: 'awrah-shorts',
     slug: 'awrah-shorts',
     name: 'AWRAH SHORTS',
-    subtitle: 'Предзаказ · 30 июня 2026',
+    subtitle: '',
     priceKZT: 14990,
     priceUSD: 31,
     priceRUB: 2490,
-    preorderPriceKZT: 12000,
-    preorderPriceRUB: 2000,
     sizes: ['M', 'L', 'XL'],
     colors: ['BLACK', 'NAVY', 'GREY'],
-    status: 'preorder',
-    preorderDate: '2026-06-30T00:00:00+05:00',
-    thumb: '/photos/new2.jpg',
-    gallery: ['/photos/new2.jpg', '/photos/awrah-black.jpg'],
+    status: 'available',
+    thumb: '/photos/IMG_2718.JPG',
+    gallery: [
+      '/photos/IMG_2718.JPG',
+      '/photos/IMG_2725.JPG',
+      '/photos/IMG_2727.JPG',
+      '/photos/IMG_2726.JPG',
+    ],
     hasSizeChart: false,
   },
 }
@@ -78,4 +80,11 @@ export function getProductBySlug(slug: string): Product | undefined {
 
 export function isProductId(value: string): value is ProductId {
   return value in PRODUCTS
+}
+
+/** Per-color image for the shorts gallery — used to jump the gallery to the chosen color. */
+export const SHORTS_COLOR_IMAGE: Record<Color, string> = {
+  BLACK: '/photos/IMG_2727.JPG',
+  NAVY: '/photos/IMG_2726.JPG',
+  GREY: '/photos/IMG_2725.JPG',
 }
