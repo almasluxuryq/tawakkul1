@@ -25,7 +25,7 @@ interface OrderData {
 const WA = '77009570233'
 const TG = 'tawakkulgpt'
 const KASPI_LINK = 'https://pay.kaspi.kz/pay/anpwu3nf'
-const VTB_CARD = '2204 3601 0035 7829'
+const VTB_CARD = '2204 3602 0037 0326'
 const KASPI_CARD = '4400 4302 4689 2928'
 const CARD_HOLDER = 'ALMAS NURBEKULY'
 

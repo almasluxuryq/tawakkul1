@@ -44,7 +44,7 @@ export function Footer() {
               <WhatsAppIcon className="h-5 w-5" />
             </a>
             <a
-              href="https://www.instagram.com/tawakkulTAWAKKUL/"
+              href="https://www.instagram.com/tawakkultwkkl?igsh=c2ppaHRjZmZ6bDF5"
               target="_blank"
               rel="noopener noreferrer"
               className="text-white/50 hover:text-white transition-colors"
