@@ -5,12 +5,13 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import { X, Minus, Plus, Trash2, ShoppingBag } from 'lucide-react'
 import { useI18n } from '@/lib/i18n/context'
-import { useCart, PRODUCTS, COLOR_LABEL_RU } from '@/lib/cart/context'
+import { useCart, PRODUCTS } from '@/lib/cart/context'
+import { colorLabel } from '@/lib/i18n/pay'
 import { Button } from '@/components/ui/button'
 import { useIsMobile } from '@/hooks/use-mobile'
 
 export function CartDrawer() {
-  const { t } = useI18n()
+  const { t, language } = useI18n()
   const router = useRouter()
   const isMobile = useIsMobile()
   const {
@@ -120,7 +121,7 @@ export function CartDrawer() {
                             </p>
                             {item.color && (
                               <p className="text-xs text-white/50">
-                                {t.shorts.color}: {COLOR_LABEL_RU[item.color]}
+                                {t.shorts.color}: {colorLabel(language, item.color)}
                               </p>
                             )}
 
@@ -265,7 +266,7 @@ export function CartDrawer() {
                             </p>
                             {item.color && (
                               <p className="text-sm text-white/50">
-                                {t.shorts.color}: {COLOR_LABEL_RU[item.color]}
+                                {t.shorts.color}: {colorLabel(language, item.color)}
                               </p>
                             )}
 

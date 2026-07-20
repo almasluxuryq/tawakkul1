@@ -5,7 +5,8 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { CreditCard, MessageCircle, ExternalLink, Send, Package, Copy, Check } from 'lucide-react'
 import { useI18n } from '@/lib/i18n/context'
-import { PRODUCTS, ProductId, Color, COLOR_LABEL_RU } from '@/lib/cart/context'
+import { PAY_T, colorLabel } from '@/lib/i18n/pay'
+import { PRODUCTS, ProductId, Color } from '@/lib/cart/context'
 import { Button } from '@/components/ui/button'
 
 interface OrderData {
@@ -51,7 +52,8 @@ function CopyRow({ value }: { value: string }) {
 }
 
 export default function CheckoutSuccessPage() {
-  const { t } = useI18n()
+  const { t, language } = useI18n()
+  const p = PAY_T[language]
   const [order, setOrder] = useState<OrderData | null>(null)
 
   useEffect(() => {
@@ -67,7 +69,7 @@ export default function CheckoutSuccessPage() {
       ? fmt(order?.totalPriceUSD ?? 0, t.common.price.usd)
       : fmt(order?.totalPriceRUB ?? 0, t.common.price.rub)
 
-  const waText = order ? `Здравствуйте! Оформил(а) заказ ${order.orderNumber}. Прикладываю чек об оплате.` : ''
+  const waText = order ? `${p.orderNumber}: ${order.orderNumber}` : ''
   const waHref = `https://wa.me/${WA}?text=${encodeURIComponent(waText)}`
   const tgHref = `https://t.me/${TG}`
 
@@ -84,22 +86,21 @@ export default function CheckoutSuccessPage() {
         </div>
 
         <div className="text-center mb-7">
-          <h1 className="text-2xl sm:text-3xl font-light mb-2">Заказ оформлен!</h1>
-          <p className="text-sm text-white/50">Осталось оплатить и прислать чек — и мы берём заказ в работу.</p>
+          <h1 className="text-2xl sm:text-3xl font-light mb-2">{p.orderPlaced}</h1>
+          <p className="text-sm text-white/50">{p.orderPlacedSub}</p>
         </div>
 
         {order && (
           <div className="text-center mb-6">
-            <p className="text-xs text-white/40 mb-1">Номер заказа</p>
+            <p className="text-xs text-white/40 mb-1">{p.orderNumber}</p>
             <p className="text-lg font-mono tracking-wider">{order.orderNumber}</p>
           </div>
         )}
 
-        {/* Оплата */}
         {order && (
           <div className="bg-white/5 rounded-xl p-6 mb-5 border border-white/20">
             <div className="flex items-center justify-between mb-4">
-              <span className="text-xs px-2 py-0.5 rounded text-white" style={{ backgroundColor: country === 'KZ' ? '#F14635' : country === 'WORLD' ? '#F14635' : '#009FDF' }}>
+              <span className="text-xs px-2 py-0.5 rounded text-white" style={{ backgroundColor: country === 'RU' ? '#009FDF' : '#F14635' }}>
                 {country === 'RU' ? 'ВТБ (МИР)' : 'Kaspi'}
               </span>
               <span className="text-base font-semibold">{payAmount}</span>
@@ -107,10 +108,10 @@ export default function CheckoutSuccessPage() {
 
             {country === 'KZ' && (
               <>
-                <p className="text-sm text-white/60 mb-3">Нажмите кнопку, оплатите в Kaspi, затем пришлите чек.</p>
+                <p className="text-sm text-white/60 mb-3">{p.payKzHint}</p>
                 <a href={KASPI_LINK} target="_blank" rel="noopener noreferrer" className="block">
                   <Button className="w-full bg-white text-black hover:bg-white/90 py-6 text-base font-medium gap-2">
-                    <ExternalLink className="h-5 w-5" /> Оплатить через Kaspi
+                    <ExternalLink className="h-5 w-5" /> {p.payKaspiBtn}
                   </Button>
                 </a>
               </>
@@ -118,7 +119,7 @@ export default function CheckoutSuccessPage() {
 
             {country === 'RU' && (
               <>
-                <p className="text-sm text-white/60 mb-3">Переведите сумму на карту <b>ВТБ (МИР)</b> и пришлите чек:</p>
+                <p className="text-sm text-white/60 mb-3">{p.payRuHint}</p>
                 <CopyRow value={VTB_CARD} />
                 <p className="text-sm text-white/70 mt-2">{CARD_HOLDER}</p>
               </>
@@ -126,16 +127,15 @@ export default function CheckoutSuccessPage() {
 
             {country === 'WORLD' && (
               <>
-                <p className="text-sm text-white/60 mb-3">Переведите сумму (в долларах) на карту <b>Kaspi</b> и пришлите чек:</p>
+                <p className="text-sm text-white/60 mb-3">{p.payWorldHint}</p>
                 <CopyRow value={KASPI_CARD} />
                 <p className="text-sm text-white/70 mt-2">{CARD_HOLDER}</p>
-                <p className="text-xs text-white/40 mt-2">Стоимость доставки согласуем с вами в WhatsApp / Telegram.</p>
+                <p className="text-xs text-white/40 mt-2">{p.worldDelivNote}</p>
               </>
             )}
 
-            {/* Чек */}
             <div className="border-t border-white/10 mt-5 pt-5">
-              <p className="text-sm text-white/50 mb-3">Пришлите чек об оплате:</p>
+              <p className="text-sm text-white/50 mb-3">{p.sendCheck}</p>
               <div className="flex gap-3">
                 <a href={waHref} target="_blank" rel="noopener noreferrer" className="flex-1">
                   <Button className="w-full py-4 gap-2 text-white" style={{ backgroundColor: '#25D366' }}>
@@ -152,12 +152,11 @@ export default function CheckoutSuccessPage() {
           </div>
         )}
 
-        {/* Состав заказа */}
         {order && (
           <div className="bg-white/5 rounded-lg p-5 mb-6 text-left">
             <div className="flex items-center gap-2 mb-3">
               <Package className="h-4 w-4 text-white/40" />
-              <h3 className="text-sm text-white/50">Состав заказа</h3>
+              <h3 className="text-sm text-white/50">{p.orderComposition}</h3>
             </div>
             <div className="space-y-2 text-sm">
               {order.items.map((item, index) => {
@@ -165,14 +164,14 @@ export default function CheckoutSuccessPage() {
                 return (
                   <div key={index} className="flex justify-between gap-2">
                     <span className="text-white/70">
-                      {product.name} ({item.size}{item.color ? `, ${COLOR_LABEL_RU[item.color]}` : ''}) ×{item.quantity}
+                      {product.name} ({item.size}{item.color ? `, ${colorLabel(language, item.color)}` : ''}) ×{item.quantity}
                     </span>
                     <span className="whitespace-nowrap">{fmt(item.quantity * product.priceRUB, t.common.price.rub)}</span>
                   </div>
                 )
               })}
               <div className="border-t border-white/10 pt-2 flex justify-between font-medium">
-                <span>Итого</span>
+                <span>{p.total}</span>
                 <span>{payAmount}</span>
               </div>
             </div>
@@ -181,7 +180,7 @@ export default function CheckoutSuccessPage() {
 
         <Link href="/track" className="block mb-3">
           <Button variant="outline" className="w-full border-white/30 text-white hover:bg-white hover:text-black py-5">
-            Отследить заказ
+            {p.trackOrder}
           </Button>
         </Link>
         <div className="text-center">

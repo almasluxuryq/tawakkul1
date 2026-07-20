@@ -7,7 +7,8 @@ import { motion, useInView } from 'framer-motion'
 import { ArrowLeft, Bell, Minus, Plus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useI18n } from '@/lib/i18n/context'
-import { useCart, COLOR_LABEL_RU } from '@/lib/cart/context'
+import { useCart } from '@/lib/cart/context'
+import { colorLabel } from '@/lib/i18n/pay'
 import { Product, Size, Color, SHORTS_COLOR_IMAGE } from '@/lib/cart/products'
 import { Button } from '@/components/ui/button'
 import { Header } from '@/components/layout/header'
@@ -113,7 +114,7 @@ function StorySection({ block, index }: { block: StoryBlock; index: number }) {
 }
 
 export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
-  const { t } = useI18n()
+  const { t, language } = useI18n()
   const { addItem, setIsCartOpen } = useCart()
   const router = useRouter()
 
@@ -508,7 +509,7 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
                         <div className="flex items-center justify-between">
                           <span className="text-xs tracking-[0.15em] uppercase text-white/50">{t.shorts.color}</span>
                           {selectedColor && (
-                            <span className="text-xs text-white/40">{COLOR_LABEL_RU[selectedColor]}</span>
+                            <span className="text-xs text-white/40">{colorLabel(language, selectedColor)}</span>
                           )}
                         </div>
                         <div className="grid grid-cols-3 gap-2.5">
@@ -530,7 +531,7 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
                               <span className={`text-[10px] font-medium tracking-[0.1em] uppercase ${
                                 selectedColor === color ? 'text-white' : 'text-white/40'
                               }`}>
-                                {COLOR_LABEL_RU[color]}
+                                {colorLabel(language, color)}
                               </span>
                             </button>
                           ))}
