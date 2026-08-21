@@ -65,15 +65,15 @@ export function StorefrontHero() {
       {/* Background */}
       <div className="absolute inset-0">
         <Image
-          src="/photos/photo12.JPG"
+          src="/photos/new6.jpg"
           alt=""
           fill
           priority
           className="object-cover object-center"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-black/60" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/70" />
+        <div className="absolute inset-0 bg-black/45" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/25 to-black/95" />
       </div>
 
       {/* Content */}

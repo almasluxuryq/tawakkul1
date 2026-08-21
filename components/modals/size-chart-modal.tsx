@@ -1,6 +1,7 @@
 'use client'
 
 import { useI18n } from '@/lib/i18n/context'
+import { Size } from '@/lib/cart/products'
 import {
   Dialog,
   DialogContent,
@@ -27,10 +28,12 @@ const sizeData = [
 interface SizeChartModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  sizes?: Size[]
 }
 
-export function SizeChartModal({ open, onOpenChange }: SizeChartModalProps) {
+export function SizeChartModal({ open, onOpenChange, sizes }: SizeChartModalProps) {
   const { t } = useI18n()
+  const rows = sizes ? sizeData.filter((r) => sizes.includes(r.size as Size)) : sizeData
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -60,7 +63,7 @@ export function SizeChartModal({ open, onOpenChange }: SizeChartModalProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sizeData.map((row) => (
+              {rows.map((row) => (
                 <TableRow
                   key={row.size}
                   className="border-white/10 hover:bg-white/5"

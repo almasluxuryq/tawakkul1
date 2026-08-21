@@ -19,6 +19,8 @@ export interface Product {
   preorderPriceRUB?: number
   sizes: Size[]
   colors?: Color[]
+  /** Per-color list of sizes that are out of stock (cannot be selected / bought). */
+  outOfStock?: Partial<Record<Color, Size[]>>
   status: ProductStatus
   preorderDate?: string
   thumb: string
@@ -26,26 +28,8 @@ export interface Product {
   hasSizeChart: boolean
 }
 
+// Порядок здесь = порядок на главной. Шорты первыми, худи вторым.
 export const PRODUCTS: Record<ProductId, Product> = {
-  'one-ummah-zip-hoodie': {
-    id: 'one-ummah-zip-hoodie',
-    slug: 'one-ummah-zip-hoodie',
-    name: 'ONE UMMAH ZIP HOODIE',
-    subtitle: '',
-    priceKZT: 19990,
-    priceUSD: 45,
-    priceRUB: 3590,
-    sizes: ['S', 'M', 'L', 'XL'],
-    status: 'available',
-    thumb: '/photos/photo_7_2026-06-07_15-25-24.jpg',
-    gallery: [
-      '/photos/photo_7_2026-06-07_15-25-24.jpg',
-      '/photos/IMG_2515.JPEG',
-      '/photos/IMG_5516 (2).JPG',
-      '/photos/IMG_5735 (2).JPEG',
-    ],
-    hasSizeChart: true,
-  },
   'awrah-shorts': {
     id: 'awrah-shorts',
     slug: 'awrah-shorts',
@@ -64,7 +48,32 @@ export const PRODUCTS: Record<ProductId, Product> = {
       '/photos/IMG_2727.JPG',
       '/photos/IMG_2726.JPG',
     ],
-    hasSizeChart: false,
+    hasSizeChart: true,
+  },
+  'one-ummah-zip-hoodie': {
+    id: 'one-ummah-zip-hoodie',
+    slug: 'one-ummah-zip-hoodie',
+    name: 'ONE UMMAH ZIP HOODIE',
+    subtitle: '',
+    priceKZT: 19990,
+    priceUSD: 45,
+    priceRUB: 3590,
+    sizes: ['S', 'M', 'L', 'XL'],
+    colors: ['BLACK', 'NAVY'],
+    // Чёрный и синий: M и L распроданы, S и XL в наличии.
+    outOfStock: {
+      BLACK: ['M', 'L'],
+      NAVY: ['M', 'L'],
+    },
+    status: 'available',
+    thumb: '/photos/photo_7_2026-06-07_15-25-24.jpg',
+    gallery: [
+      '/photos/photo_7_2026-06-07_15-25-24.jpg',
+      '/photos/IMG_2515.JPEG',
+      '/photos/IMG_5516 (2).JPG',
+      '/photos/IMG_5735 (2).JPEG',
+    ],
+    hasSizeChart: true,
   },
 }
 

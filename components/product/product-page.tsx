@@ -118,8 +118,12 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
   const { addItem, setIsCartOpen } = useCart()
   const router = useRouter()
 
-  const [selectedSize, setSelectedSize] = useState<Size>(product.sizes[1] ?? product.sizes[0])
-  const [selectedColor, setSelectedColor] = useState<Color | null>(product.colors?.[0] ?? null)
+  const initColor = product.colors?.[0] ?? null
+  const initOut = (initColor && product.outOfStock?.[initColor]) || []
+  const [selectedSize, setSelectedSize] = useState<Size>(
+    product.sizes.find((s) => !initOut.includes(s)) ?? product.sizes[0]
+  )
+  const [selectedColor, setSelectedColor] = useState<Color | null>(initColor)
   const [quantity, setQuantity] = useState(1)
   const [activeImage, setActiveImage] = useState(0)
   const [showSizeChart, setShowSizeChart] = useState(false)
@@ -159,6 +163,11 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
 
   const handleSelectColor = (color: Color) => {
     setSelectedColor(color)
+    const out = product.outOfStock?.[color] || []
+    if (out.includes(selectedSize)) {
+      const avail = product.sizes.find((s) => !out.includes(s))
+      if (avail) setSelectedSize(avail)
+    }
     const idx = product.gallery.indexOf(SHORTS_COLOR_IMAGE[color])
     if (idx >= 0) setActiveImage(idx)
   }
@@ -183,6 +192,8 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
       : selectedSize === 'XL' ? t.shorts.sizeGuide.xl
       : null
     : null
+
+  const currentOut = (selectedColor && product.outOfStock?.[selectedColor]) || []
 
   return (
     <>
@@ -512,7 +523,7 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
                             <span className="text-xs text-white/40">{colorLabel(language, selectedColor)}</span>
                           )}
                         </div>
-                        <div className="grid grid-cols-3 gap-2.5">
+                        <div className={`grid gap-2.5 ${product.colors.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
                           {product.colors.map((color) => (
                             <button
                               key={color}
@@ -552,19 +563,26 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
                         )}
                       </div>
                       <div className="grid grid-cols-4 gap-2">
-                        {product.sizes.map((size) => (
+                        {product.sizes.map((size) => {
+                          const soldOut = currentOut.includes(size)
+                          return (
                           <button
                             key={size}
-                            onClick={() => setSelectedSize(size)}
+                            type="button"
+                            disabled={soldOut}
+                            onClick={() => { if (!soldOut) setSelectedSize(size) }}
                             className={`h-14 text-sm font-medium transition-all duration-200 ${
-                              selectedSize === size
+                              soldOut
+                                ? 'border border-white/5 text-white/20 line-through cursor-not-allowed'
+                                : selectedSize === size
                                 ? 'bg-white text-black'
                                 : 'border border-white/15 text-white/70 hover:border-white/40 hover:text-white'
                             }`}
                           >
                             {size}
                           </button>
-                        ))}
+                          )
+                        })}
                       </div>
                     </div>
 
@@ -712,7 +730,7 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
       </div>
 
       {product.hasSizeChart && (
-        <SizeChartModal open={showSizeChart} onOpenChange={setShowSizeChart} />
+        <SizeChartModal open={showSizeChart} onOpenChange={setShowSizeChart} sizes={product.sizes} />
       )}
     </>
   )
