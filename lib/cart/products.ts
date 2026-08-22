@@ -40,6 +40,11 @@ export const PRODUCTS: Record<ProductId, Product> = {
     priceRUB: 2000,
     sizes: ['M', 'L', 'XL'],
     colors: ['BLACK', 'NAVY', 'GREY'],
+    // Чёрный и синий: размеры M и L распроданы (доступен только XL). Серый — все размеры.
+    outOfStock: {
+      BLACK: ['M', 'L'],
+      NAVY: ['M', 'L'],
+    },
     status: 'available',
     thumb: '/photos/IMG_2718.JPG',
     gallery: [
@@ -59,12 +64,6 @@ export const PRODUCTS: Record<ProductId, Product> = {
     priceUSD: 45,
     priceRUB: 3590,
     sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['BLACK', 'NAVY'],
-    // Чёрный и синий: M и L распроданы, S и XL в наличии.
-    outOfStock: {
-      BLACK: ['M', 'L'],
-      NAVY: ['M', 'L'],
-    },
     status: 'available',
     thumb: '/photos/photo_7_2026-06-07_15-25-24.jpg',
     gallery: [

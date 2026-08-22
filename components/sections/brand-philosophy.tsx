@@ -47,13 +47,15 @@ export function BrandPhilosophySection() {
               {t.brand.description}
             </p>
             <div className="pt-6">
-              <Image
-                src="/photos/photo10.PNG"
-                alt="Tawakkul embroidery"
-                width={160}
-                height={60}
-                className="opacity-60"
-              />
+              <span className="relative block h-[44px] w-[124px] opacity-85">
+                <Image
+                  src="/logo-twkkl.png"
+                  alt="twkkl"
+                  fill
+                  className="object-contain object-left"
+                  sizes="124px"
+                />
+              </span>
             </div>
           </motion.div>
         </div>

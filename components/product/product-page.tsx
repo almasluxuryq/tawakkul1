@@ -120,8 +120,11 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
 
   const initColor = product.colors?.[0] ?? null
   const initOut = (initColor && product.outOfStock?.[initColor]) || []
+  const preferredSize = product.sizes[1] ?? product.sizes[0]
   const [selectedSize, setSelectedSize] = useState<Size>(
-    product.sizes.find((s) => !initOut.includes(s)) ?? product.sizes[0]
+    !initOut.includes(preferredSize)
+      ? preferredSize
+      : product.sizes.find((s) => !initOut.includes(s)) ?? product.sizes[0]
   )
   const [selectedColor, setSelectedColor] = useState<Color | null>(initColor)
   const [quantity, setQuantity] = useState(1)
