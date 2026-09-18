@@ -3,6 +3,8 @@
 import Link from 'next/link'
 import { Instagram } from 'lucide-react'
 import { useI18n } from '@/lib/i18n/context'
+import { PAGES_T } from '@/lib/i18n/pages'
+import { LEGAL_T } from '@/lib/i18n/legal'
 
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
@@ -18,7 +20,9 @@ function WhatsAppIcon({ className }: { className?: string }) {
 }
 
 export function Footer() {
-  const { t } = useI18n()
+  const { t, language } = useI18n()
+  const p = PAGES_T[language]
+  const l = LEGAL_T[language]
 
   return (
     <footer className="section-dark border-t border-white/10">
@@ -52,12 +56,18 @@ export function Footer() {
             >
               <Instagram className="h-5 w-5" />
             </a>
-            <a
-              href="/#collection"
+            <Link
+              href="/about"
               className="text-sm text-white/50 hover:text-white transition-colors"
             >
-              {t.footer.order}
-            </a>
+              {p.navAbout}
+            </Link>
+            <Link
+              href="/faq"
+              className="text-sm text-white/50 hover:text-white transition-colors"
+            >
+              {p.navFaq}
+            </Link>
             <Link
               href="/track"
               className="text-sm text-white/50 hover:text-white transition-colors"
@@ -68,11 +78,24 @@ export function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="mt-12 pt-8 border-t border-white/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <p className="text-xs text-white/30">{t.footer.copyright}</p>
-          <p className="text-xs text-white/30 italic font-serif">
-            {t.footer.slogan}
-          </p>
+        <div className="mt-12 pt-8 border-t border-white/10 flex flex-col gap-6">
+          <div className="flex flex-wrap gap-x-6 gap-y-2">
+            <Link href="/privacy" className="text-xs text-white/30 hover:text-white/70 transition-colors">
+              {l.privacy.navLabel}
+            </Link>
+            <Link href="/terms" className="text-xs text-white/30 hover:text-white/70 transition-colors">
+              {l.terms.navLabel}
+            </Link>
+            <Link href="/delivery" className="text-xs text-white/30 hover:text-white/70 transition-colors">
+              {l.delivery.navLabel}
+            </Link>
+          </div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <p className="text-xs text-white/30">{t.footer.copyright}</p>
+            <p className="text-xs text-white/30 italic font-serif">
+              {t.footer.slogan}
+            </p>
+          </div>
         </div>
       </div>
     </footer>

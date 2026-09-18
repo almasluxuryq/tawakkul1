@@ -6,6 +6,7 @@ import { StorefrontHero } from '@/components/sections/storefront-hero'
 import { StorefrontProducts } from '@/components/sections/storefront-products'
 import { ManifestoSection } from '@/components/sections/manifesto'
 import { BrandPhilosophySection } from '@/components/sections/brand-philosophy'
+import { TelegramDropSection } from '@/components/sections/telegram-drop'
 import { CartDrawer } from '@/components/cart/cart-drawer'
 
 /** Общая главная страница — используется на /, /kz, /ru, /eng. */
@@ -18,6 +19,7 @@ export function HomeContent() {
         <StorefrontProducts />
         <ManifestoSection />
         <BrandPhilosophySection />
+        <TelegramDropSection />
       </main>
       <Footer />
       <CartDrawer />

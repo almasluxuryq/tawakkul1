@@ -22,7 +22,7 @@ export function BrandPhilosophySection() {
             className="relative aspect-[4/5] overflow-hidden order-2 lg:order-1"
           >
             <Image
-              src="/photos/photo6.JPG"
+              src="/photos/IMG_2527.JPG"
               alt="Tawakkul brand"
               fill
               className="object-cover"

@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, ShoppingBag, ChevronDown } from 'lucide-react'
 import { useI18n } from '@/lib/i18n/context'
+import { PAGES_T } from '@/lib/i18n/pages'
 import { useCart } from '@/lib/cart/context'
 import { Language } from '@/lib/i18n/translations'
 import { Button } from '@/components/ui/button'
@@ -31,6 +32,7 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { language, setLanguage, t } = useI18n()
+  const p = PAGES_T[language]
   const { totalItems, setIsCartOpen } = useCart()
 
   useEffect(() => {
@@ -80,6 +82,18 @@ export function Header() {
                     {t.nav[link.key]}
                   </a>
                 ))}
+                <Link
+                  href="/about"
+                  className="text-sm text-white/50 hover:text-white transition-colors duration-300"
+                >
+                  {p.navAbout}
+                </Link>
+                <Link
+                  href="/faq"
+                  className="text-sm text-white/50 hover:text-white transition-colors duration-300"
+                >
+                  {p.navFaq}
+                </Link>
                 <Link
                   href="/track"
                   className="text-sm text-white/50 hover:text-white transition-colors duration-300"
@@ -223,7 +237,22 @@ export function Header() {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: navLinks.length * 0.1 }}
+                    className="flex flex-col"
                   >
+                    <Link
+                      href="/about"
+                      onClick={handleNavClick}
+                      className="text-lg text-white/60 hover:text-white py-3 transition-colors duration-300 block"
+                    >
+                      {p.navAbout}
+                    </Link>
+                    <Link
+                      href="/faq"
+                      onClick={handleNavClick}
+                      className="text-lg text-white/60 hover:text-white py-3 transition-colors duration-300 block"
+                    >
+                      {p.navFaq}
+                    </Link>
                     <Link
                       href="/track"
                       onClick={handleNavClick}

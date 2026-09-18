@@ -33,6 +33,52 @@ const CARD_HOLDER = 'ALMAS NURBEKULY'
 const fmt = (price: number, currency: string) =>
   new Intl.NumberFormat('ru-RU').format(price) + ' ' + currency
 
+// Локальные подписи для сообщения-уведомления (клиент отправляет нам).
+const MSG_T = {
+  ru: {
+    title: 'НОВЫЙ ЗАКАЗ',
+    order: 'Заказ',
+    name: 'Имя',
+    phone: 'Телефон',
+    city: 'Город',
+    country: 'Страна',
+    items: 'Состав',
+    toPay: 'К оплате',
+    countries: { RU: 'Россия', KZ: 'Казахстан', WORLD: 'Другая страна' },
+    copy: 'Скопировать детали заказа',
+    copied: 'Скопировано',
+    copyHint: 'Для Telegram: скопируйте детали и вставьте в чат вместе с чеком.',
+  },
+  kk: {
+    title: 'ЖАҢА ТАПСЫРЫС',
+    order: 'Тапсырыс',
+    name: 'Аты',
+    phone: 'Телефон',
+    city: 'Қала',
+    country: 'Ел',
+    items: 'Құрамы',
+    toPay: 'Төлеуге',
+    countries: { RU: 'Ресей', KZ: 'Қазақстан', WORLD: 'Басқа ел' },
+    copy: 'Тапсырыс деректерін көшіру',
+    copied: 'Көшірілді',
+    copyHint: 'Telegram үшін: деректерді көшіріп, чекпен бірге чатқа қойыңыз.',
+  },
+  en: {
+    title: 'NEW ORDER',
+    order: 'Order',
+    name: 'Name',
+    phone: 'Phone',
+    city: 'City',
+    country: 'Country',
+    items: 'Items',
+    toPay: 'To pay',
+    countries: { RU: 'Russia', KZ: 'Kazakhstan', WORLD: 'Other country' },
+    copy: 'Copy order details',
+    copied: 'Copied',
+    copyHint: 'For Telegram: copy the details and paste them into the chat with your receipt.',
+  },
+} as const
+
 function CopyRow({ value }: { value: string }) {
   const [copied, setCopied] = useState(false)
   return (
@@ -47,6 +93,24 @@ function CopyRow({ value }: { value: string }) {
     >
       <span className="text-xl sm:text-2xl font-mono tracking-wider">{value}</span>
       {copied ? <Check className="h-5 w-5 text-emerald-400" /> : <Copy className="h-5 w-5 text-white/40" />}
+    </button>
+  )
+}
+
+function CopyOrderButton({ text, label, copiedLabel }: { text: string; label: string; copiedLabel: string }) {
+  const [copied, setCopied] = useState(false)
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        navigator.clipboard?.writeText(text)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 1800)
+      }}
+      className="w-full mt-3 flex items-center justify-center gap-2 rounded-lg border border-white/15 py-3 text-sm text-white/70 hover:text-white hover:border-white/30 transition-colors"
+    >
+      {copied ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
+      {copied ? copiedLabel : label}
     </button>
   )
 }
@@ -69,8 +133,31 @@ export default function CheckoutSuccessPage() {
       ? fmt(order?.totalPriceUSD ?? 0, t.common.price.usd)
       : fmt(order?.totalPriceRUB ?? 0, t.common.price.rub)
 
-  const waText = order ? `${p.orderNumber}: ${order.orderNumber}` : ''
-  const waHref = `https://wa.me/${WA}?text=${encodeURIComponent(waText)}`
+  const m = MSG_T[language]
+
+  const orderMessage = (() => {
+    if (!order) return ''
+    const lines: string[] = []
+    lines.push(`🕋 TAWAKKUL — ${m.title}`)
+    lines.push(`${m.order}: ${order.orderNumber}`)
+    lines.push('')
+    lines.push(`${m.name}: ${order.name}`)
+    lines.push(`${m.phone}: ${order.phone}`)
+    lines.push(`${m.country}: ${m.countries[order.country]}`)
+    lines.push(`${m.city}: ${order.city}`)
+    lines.push('')
+    lines.push(`${m.items}:`)
+    order.items.forEach((item) => {
+      const product = PRODUCTS[item.productId]
+      const clr = item.color ? `, ${colorLabel(language, item.color)}` : ''
+      lines.push(`• ${product.name} (${item.size}${clr}) ×${item.quantity}`)
+    })
+    lines.push('')
+    lines.push(`${m.toPay}: ${payAmount}`)
+    return lines.join('\n')
+  })()
+
+  const waHref = `https://wa.me/${WA}?text=${encodeURIComponent(orderMessage)}`
   const tgHref = `https://t.me/${TG}`
 
   return (
@@ -142,12 +229,20 @@ export default function CheckoutSuccessPage() {
                     <MessageCircle className="h-4 w-4" /> WhatsApp
                   </Button>
                 </a>
-                <a href={tgHref} target="_blank" rel="noopener noreferrer" className="flex-1">
+                <a
+                  href={tgHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1"
+                  onClick={() => navigator.clipboard?.writeText(orderMessage)}
+                >
                   <Button className="w-full py-4 gap-2 text-white" style={{ backgroundColor: '#229ED9' }}>
                     <Send className="h-4 w-4" /> Telegram
                   </Button>
                 </a>
               </div>
+              <CopyOrderButton text={orderMessage} label={m.copy} copiedLabel={m.copied} />
+              <p className="text-xs text-white/35 mt-2">{m.copyHint}</p>
             </div>
           </div>
         )}

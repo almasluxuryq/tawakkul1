@@ -963,7 +963,7 @@ export const translations = {
       fit: {
         label: 'Fit',
         heading: 'Two-layer shorts with built-in tights.',
-        description: 'Relaxed shorts over dense below-the-knee tights. Aurah covered without compromising freedom of movement — for prayer, gym, and street.',
+        description: 'Relaxed shorts over dense below-the-knee tights. Awrah covered without compromising freedom of movement — for prayer, gym, and street.',
       },
       waistband: {
         label: 'Waistband',

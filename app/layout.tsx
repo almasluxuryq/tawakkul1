@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter, Space_Grotesk, Cormorant } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/next'
 import { I18nProvider } from '@/lib/i18n/context'
 import { CartProvider } from '@/lib/cart/context'
 import './globals.css'
@@ -85,7 +84,6 @@ export default function RootLayout({
             {children}
           </CartProvider>
         </I18nProvider>
-        <Analytics />
       </body>
     </html>
   )
