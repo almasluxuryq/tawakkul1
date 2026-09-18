@@ -28,8 +28,27 @@ export interface Product {
   hasSizeChart: boolean
 }
 
-// Порядок здесь = порядок на главной. Шорты первыми, худи вторым.
+// Порядок здесь = порядок на главной. Худи первым, шорты вторым.
 export const PRODUCTS: Record<ProductId, Product> = {
+  'one-ummah-zip-hoodie': {
+    id: 'one-ummah-zip-hoodie',
+    slug: 'one-ummah-zip-hoodie',
+    name: 'ONE UMMAH ZIP HOODIE',
+    subtitle: '',
+    priceKZT: 23990,
+    priceUSD: 54,
+    priceRUB: 3990,
+    sizes: ['S', 'M', 'L', 'XL'],
+    status: 'available',
+    thumb: '/photos/photo_7_2026-06-07_15-25-24.jpg',
+    gallery: [
+      '/photos/photo_7_2026-06-07_15-25-24.jpg',
+      '/photos/IMG_2515.JPEG',
+      '/photos/IMG_5516 (2).JPG',
+      '/photos/IMG_5735 (2).JPEG',
+    ],
+    hasSizeChart: true,
+  },
   'awrah-shorts': {
     id: 'awrah-shorts',
     slug: 'awrah-shorts',
@@ -52,25 +71,6 @@ export const PRODUCTS: Record<ProductId, Product> = {
       '/photos/IMG_2725.JPG',
       '/photos/IMG_2727.JPG',
       '/photos/IMG_2726.JPG',
-    ],
-    hasSizeChart: true,
-  },
-  'one-ummah-zip-hoodie': {
-    id: 'one-ummah-zip-hoodie',
-    slug: 'one-ummah-zip-hoodie',
-    name: 'ONE UMMAH ZIP HOODIE',
-    subtitle: '',
-    priceKZT: 19990,
-    priceUSD: 45,
-    priceRUB: 3590,
-    sizes: ['S', 'M', 'L', 'XL'],
-    status: 'available',
-    thumb: '/photos/photo_7_2026-06-07_15-25-24.jpg',
-    gallery: [
-      '/photos/photo_7_2026-06-07_15-25-24.jpg',
-      '/photos/IMG_2515.JPEG',
-      '/photos/IMG_5516 (2).JPG',
-      '/photos/IMG_5735 (2).JPEG',
     ],
     hasSizeChart: true,
   },
