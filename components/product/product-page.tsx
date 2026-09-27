@@ -19,7 +19,7 @@ import { CountdownTimer } from '@/components/product/countdown-timer'
 
 const TELEGRAM_CHANNEL = process.env.NEXT_PUBLIC_TELEGRAM_CHANNEL || 'tawakkulbrand'
 const NOTIFY_HREF = `https://t.me/${TELEGRAM_CHANNEL}`
-const WA_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '77009570233'
+const WA_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '77767244622'
 const TG_BOT = process.env.NEXT_PUBLIC_TELEGRAM_BOT || 'tawakkulgpt'
 
 const COLOR_HEX: Record<Color, string> = {

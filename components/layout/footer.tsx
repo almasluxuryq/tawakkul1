@@ -39,7 +39,7 @@ export function Footer() {
           {/* Right - Links */}
           <div className="flex items-center gap-6">
             <a
-              href="https://wa.me/77009570233"
+              href="https://wa.me/77767244622"
               target="_blank"
               rel="noopener noreferrer"
               className="text-white/50 hover:text-white transition-colors"

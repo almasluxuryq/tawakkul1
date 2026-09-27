@@ -23,7 +23,7 @@ interface OrderData {
   paymentMethod: string
 }
 
-const WA = '77009570233'
+const WA = '77767244622'
 const TG = 'tawakkulgpt'
 const KASPI_LINK = 'https://pay.kaspi.kz/pay/anpwu3nf'
 const VTB_CARD = '2204 3602 0037 0326'
