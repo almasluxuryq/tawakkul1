@@ -26,7 +26,8 @@ interface OrderData {
 const WA = '77767244622'
 const TG = 'tawakkulgpt'
 const KASPI_LINK = 'https://pay.kaspi.kz/pay/anpwu3nf'
-const VTB_CARD = '2204 3602 0037 0326'
+const VTB_CARD = '2204 3601 0071 7436'
+const VTB_HOLDER = 'KHASAN AMANBEKULY'
 const KASPI_CARD = '4400 4302 4689 2928'
 const CARD_HOLDER = 'ALMAS NURBEKULY'
 
@@ -208,7 +209,7 @@ export default function CheckoutSuccessPage() {
               <>
                 <p className="text-sm text-white/60 mb-3">{p.payRuHint}</p>
                 <CopyRow value={VTB_CARD} />
-                <p className="text-sm text-white/70 mt-2">{CARD_HOLDER}</p>
+                <p className="text-sm text-white/70 mt-2">{VTB_HOLDER}</p>
               </>
             )}
 
