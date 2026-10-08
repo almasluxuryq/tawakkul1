@@ -24,11 +24,11 @@ export interface LegalStrings {
 }
 
 const CONTACT_LINE_RU =
-  'TAWAKKUL (TWKKL). Связь: WhatsApp +7 776 724 4622, Telegram @tawakkulgpt, Instagram @tawakkultwkkl.'
+  'TAWAKKUL (TWKKL). Связь: WhatsApp +7 700 957 0233, Telegram @tawakkulgpt, Instagram @tawakkultwkkl.'
 const CONTACT_LINE_KK =
-  'TAWAKKUL (TWKKL). Байланыс: WhatsApp +7 776 724 4622, Telegram @tawakkulgpt, Instagram @tawakkultwkkl.'
+  'TAWAKKUL (TWKKL). Байланыс: WhatsApp +7 700 957 0233, Telegram @tawakkulgpt, Instagram @tawakkultwkkl.'
 const CONTACT_LINE_EN =
-  'TAWAKKUL (TWKKL). Contact: WhatsApp +7 776 724 4622, Telegram @tawakkulgpt, Instagram @tawakkultwkkl.'
+  'TAWAKKUL (TWKKL). Contact: WhatsApp +7 700 957 0233, Telegram @tawakkulgpt, Instagram @tawakkultwkkl.'
 
 export const LEGAL_T: Record<Language, LegalStrings> = {
   ru: {

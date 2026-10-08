@@ -22,7 +22,7 @@ export function ContactRow({ tone = 'light' }: { tone?: Tone }) {
   const { t } = useI18n()
 
   const contactLinks = [
-    { href: 'https://wa.me/77767244622', label: 'WhatsApp', Icon: WhatsAppIcon },
+    { href: 'https://wa.me/77009570233', label: 'WhatsApp', Icon: WhatsAppIcon },
     { href: 'https://t.me/tawakkulgpt', label: 'Telegram', Icon: Send },
     {
       href: 'https://t.me/tawakkulbrand',

@@ -8,7 +8,7 @@ import { useI18n } from '@/lib/i18n/context'
 import { PAGES_T } from '@/lib/i18n/pages'
 import { Footer } from '@/components/layout/footer'
 
-const WA = 'https://wa.me/77767244622'
+const WA = 'https://wa.me/77009570233'
 const TG = 'https://t.me/tawakkulgpt'
 
 export default function AboutPage() {

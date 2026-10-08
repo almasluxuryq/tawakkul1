@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import { useI18n } from '@/lib/i18n/context'
 
-const WA_NUMBER = '77767244622'
+const WA_NUMBER = '77009570233'
 const TG_BOT = process.env.NEXT_PUBLIC_TELEGRAM_BOT || 'tawakkulgpt'
 const TG_CHANNEL = process.env.NEXT_PUBLIC_TELEGRAM_CHANNEL || 'tawakkulbrand'
 
