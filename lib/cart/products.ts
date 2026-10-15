@@ -17,6 +17,10 @@ export interface Product {
   /** Discounted price shown when status is 'preorder' */
   preorderPriceKZT?: number
   preorderPriceRUB?: number
+  /** Old (regular) price shown crossed out next to the current price */
+  compareAtKZT?: number
+  compareAtUSD?: number
+  compareAtRUB?: number
   sizes: Size[]
   colors?: Color[]
   /** Per-color list of sizes that are out of stock (cannot be selected / bought). */
@@ -35,11 +39,15 @@ export const PRODUCTS: Record<ProductId, Product> = {
     slug: 'one-ummah-zip-hoodie',
     name: 'ONE UMMAH ZIP HOODIE',
     subtitle: '',
-    priceKZT: 21990,
-    priceUSD: 49,
-    priceRUB: 3990,
+    // ПРЕДЗАКАЗ (партия 50 шт., пошив с 14.10.2026). Старая цена — зачёркнута.
+    priceKZT: 19990,
+    priceUSD: 44.99,
+    priceRUB: 3790,
+    compareAtKZT: 21990,
+    compareAtUSD: 49,
+    compareAtRUB: 3990,
     sizes: ['S', 'M', 'L', 'XL'],
-    status: 'available',
+    status: 'preorder',
     thumb: '/photos/IMG_4716.JPG',
     gallery: [
       '/photos/IMG_2515 (3).JPEG',

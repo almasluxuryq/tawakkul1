@@ -7,6 +7,7 @@ import { X, Minus, Plus, Trash2, ShoppingBag } from 'lucide-react'
 import { useI18n } from '@/lib/i18n/context'
 import { useCart, PRODUCTS } from '@/lib/cart/context'
 import { colorLabel } from '@/lib/i18n/pay'
+import { PREORDER_T } from '@/lib/i18n/preorder'
 import { Button } from '@/components/ui/button'
 import { useIsMobile } from '@/hooks/use-mobile'
 
@@ -25,6 +26,14 @@ export function CartDrawer() {
     isCartOpen,
     setIsCartOpen,
   } = useCart()
+
+  const po = PREORDER_T[language]
+  const hasPreorder = items.some((i) => PRODUCTS[i.productId].status === 'preorder')
+  const preorderNote = hasPreorder ? (
+    <p className="text-xs text-white/60 leading-relaxed bg-white/5 border border-white/10 rounded-lg p-3 mb-4">
+      {po.cartNote}
+    </p>
+  ) : null
 
   const formatPrice = (price: number, currency: string) => {
     return new Intl.NumberFormat('ru-RU').format(price) + ' ' + currency
@@ -116,6 +125,11 @@ export function CartDrawer() {
                             <h3 className="text-sm font-medium truncate">
                               {product.name}
                             </h3>
+                            {product.status === 'preorder' && (
+                              <span className="inline-block mt-1 text-[9px] tracking-[0.15em] uppercase border border-white/25 px-1.5 py-0.5 text-white/70">
+                                {po.stickyNote}
+                              </span>
+                            )}
                             <p className="text-xs text-white/50 mt-1">
                               {t.cart.size}: {item.size}
                             </p>
@@ -177,6 +191,7 @@ export function CartDrawer() {
               {/* Footer */}
               {items.length > 0 && (
                 <div className="p-4 border-t border-white/10">
+                  {preorderNote}
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-white/70">{t.cart.subtotal}</span>
                     <div className="text-right">
@@ -261,6 +276,11 @@ export function CartDrawer() {
                           {/* Details */}
                           <div className="flex-1 min-w-0">
                             <h3 className="font-medium">{product.name}</h3>
+                            {product.status === 'preorder' && (
+                              <span className="inline-block mt-1 text-[9px] tracking-[0.15em] uppercase border border-white/25 px-1.5 py-0.5 text-white/70">
+                                {po.stickyNote}
+                              </span>
+                            )}
                             <p className="text-sm text-white/50 mt-1">
                               {t.cart.size}: {item.size}
                             </p>
@@ -322,6 +342,7 @@ export function CartDrawer() {
               {/* Footer */}
               {items.length > 0 && (
                 <div className="p-6 border-t border-white/10">
+                  {preorderNote}
                   <div className="flex items-center justify-between mb-6">
                     <span className="text-lg text-white/70">
                       {t.cart.subtotal}

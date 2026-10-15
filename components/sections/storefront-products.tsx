@@ -67,9 +67,18 @@ export function StorefrontProducts() {
                       {product.name}
                     </h2>
                     <p className="text-sm text-white/50 mt-1">
-                      {product.status === 'coming_soon'
-                        ? `${t.status.dropsIn} · ${t.status.dropDate}`
-                        : formatPrice(product.priceRUB, t.common.price.rub)}
+                      {product.status === 'coming_soon' ? (
+                        `${t.status.dropsIn} · ${t.status.dropDate}`
+                      ) : (
+                        <>
+                          <span className={product.compareAtRUB ? 'text-white' : ''}>
+                            {formatPrice(product.priceRUB, t.common.price.rub)}
+                          </span>
+                          {product.compareAtRUB && (
+                            <s className="ml-2 text-white/30">{formatPrice(product.compareAtRUB, t.common.price.rub)}</s>
+                          )}
+                        </>
+                      )}
                     </p>
                   </div>
                   <span className="flex items-center gap-1 text-xs tracking-[0.15em] uppercase text-white/40 group-hover:text-white transition-colors pt-1">

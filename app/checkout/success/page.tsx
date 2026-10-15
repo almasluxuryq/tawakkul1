@@ -6,6 +6,7 @@ import { motion } from 'framer-motion'
 import { CreditCard, MessageCircle, ExternalLink, Send, Package, Copy, Check } from 'lucide-react'
 import { useI18n } from '@/lib/i18n/context'
 import { PAY_T, colorLabel } from '@/lib/i18n/pay'
+import { PREORDER_T } from '@/lib/i18n/preorder'
 import { PRODUCTS, ProductId, Color } from '@/lib/cart/context'
 import { Button } from '@/components/ui/button'
 
@@ -135,6 +136,8 @@ export default function CheckoutSuccessPage() {
       : fmt(order?.totalPriceRUB ?? 0, t.common.price.rub)
 
   const m = MSG_T[language]
+  const po = PREORDER_T[language]
+  const hasPreorder = !!order?.items.some((i) => PRODUCTS[i.productId]?.status === 'preorder')
 
   const orderMessage = (() => {
     if (!order) return ''
@@ -151,7 +154,8 @@ export default function CheckoutSuccessPage() {
     order.items.forEach((item) => {
       const product = PRODUCTS[item.productId]
       const clr = item.color ? `, ${colorLabel(language, item.color)}` : ''
-      lines.push(`• ${product.name} (${item.size}${clr}) ×${item.quantity}`)
+      const tag = product.status === 'preorder' ? ` — ${po.msgTag}` : ''
+      lines.push(`• ${product.name} (${item.size}${clr}) ×${item.quantity}${tag}`)
     })
     lines.push('')
     lines.push(`${m.toPay}: ${payAmount}`)
@@ -182,6 +186,12 @@ export default function CheckoutSuccessPage() {
           <div className="text-center mb-6">
             <p className="text-xs text-white/40 mb-1">{p.orderNumber}</p>
             <p className="text-lg font-mono tracking-wider">{order.orderNumber}</p>
+          </div>
+        )}
+
+        {hasPreorder && (
+          <div className="mb-5 rounded-xl border border-white/15 bg-white/[0.04] p-4 text-sm text-white/70 leading-relaxed">
+            {po.successNote}
           </div>
         )}
 

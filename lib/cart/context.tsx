@@ -113,7 +113,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0)
   const sumBy = (key: 'priceKZT' | 'priceUSD' | 'priceRUB') =>
-    items.reduce((sum, item) => sum + item.quantity * PRODUCTS[item.productId][key], 0)
+    Math.round(items.reduce((sum, item) => sum + item.quantity * PRODUCTS[item.productId][key], 0) * 100) / 100
   const totalPriceKZT = sumBy('priceKZT')
   const totalPriceUSD = sumBy('priceUSD')
   const totalPriceRUB = sumBy('priceRUB')

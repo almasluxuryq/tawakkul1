@@ -107,6 +107,13 @@ export const LEGAL_T: Record<Language, LegalStrings> = {
           ],
         },
         {
+          heading: 'Предзаказ',
+          paras: [
+            'Товары со статусом «Предзаказ» оплачиваются заранее (100% предоплата) и отправляются после поступления партии. Ориентировочные сроки указаны на странице товара.',
+            'Оформляя предзаказ, вы подтверждаете, что делаете это осознанно: возврат средств по предзаказу не осуществляется.',
+          ],
+        },
+        {
           heading: 'Контакты',
           paras: [CONTACT_LINE_RU],
         },
@@ -229,6 +236,13 @@ export const LEGAL_T: Record<Language, LegalStrings> = {
           ],
         },
         {
+          heading: 'Алдын ала тапсырыс',
+          paras: [
+            '«Алдын ала тапсырыс» мәртебесіндегі тауарлар алдын ала төленеді (100%) және партия түскеннен кейін жіберіледі. Шамамен мерзімдер тауар бетінде көрсетілген.',
+            'Алдын ала тапсырыс бере отырып, сіз мұны саналы түрде жасайтыныңызды растайсыз: алдын ала тапсырыс бойынша ақша қайтарылмайды.',
+          ],
+        },
+        {
           heading: 'Байланыс',
           paras: [CONTACT_LINE_KK],
         },
@@ -348,6 +362,13 @@ export const LEGAL_T: Record<Language, LegalStrings> = {
           heading: 'Returns and exchange',
           paras: [
             'If the size does not fit, message us within a few days of delivery. The item must be unworn, with tags. We resolve it individually.',
+          ],
+        },
+        {
+          heading: 'Pre-orders',
+          paras: [
+            'Items marked "Pre-order" are paid in advance (100% prepayment) and shipped once the batch arrives. Estimated timing is shown on the product page.',
+            'By placing a pre-order you confirm you are doing so consciously: pre-orders are non-refundable.',
           ],
         },
         {

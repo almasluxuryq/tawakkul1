@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation'
 import { useI18n } from '@/lib/i18n/context'
 import { useCart } from '@/lib/cart/context'
 import { colorLabel } from '@/lib/i18n/pay'
+import { PREORDER_T } from '@/lib/i18n/preorder'
 import { Product, Size, Color, SHORTS_COLOR_IMAGE } from '@/lib/cart/products'
 import { Button } from '@/components/ui/button'
 import { Header } from '@/components/layout/header'
@@ -115,6 +116,7 @@ function StorySection({ block, index }: { block: StoryBlock; index: number }) {
 
 export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
   const { t, language } = useI18n()
+  const po = PREORDER_T[language]
   const { addItem, setIsCartOpen } = useCart()
   const router = useRouter()
 
@@ -509,14 +511,46 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
                 {/* ── STANDARD BUY ── */}
                 {!isComingSoon && !isPreorderViaDm && (
                   <>
-                    <div>
-                      <span className="font-display text-3xl font-light tabular-nums">
-                        {formatPrice(product.priceRUB, t.common.price.rub)}
-                      </span>
-                      <p className="text-sm text-white/40 mt-1">
-                        {formatPrice(product.priceKZT, t.common.price.kzt)} · {formatPrice(product.priceUSD, t.common.price.usd)}
-                      </p>
-                    </div>
+                    {isPreorder && product.compareAtRUB ? (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-[10px] tracking-[0.2em] uppercase text-white/50">
+                            {po.priceLabel}
+                          </span>
+                          <span className="text-[10px] tracking-[0.12em] uppercase border border-white/25 text-white/80 px-2 py-0.5">
+                            {po.limited}
+                          </span>
+                        </div>
+                        <div className="flex items-baseline gap-3 flex-wrap">
+                          <span className="font-display text-4xl font-light tabular-nums">
+                            {formatPrice(product.priceRUB, t.common.price.rub)}
+                          </span>
+                          <span className="relative text-xl text-white/35 tabular-nums font-light">
+                            {formatPrice(product.compareAtRUB, t.common.price.rub)}
+                            <span className="absolute left-[-4%] right-[-4%] top-1/2 h-[2px] bg-red-500/80 -rotate-6" />
+                          </span>
+                        </div>
+                        <p className="text-sm text-white/50 tabular-nums">
+                          {formatPrice(product.priceKZT, t.common.price.kzt)}{' '}
+                          <s className="text-white/25">{formatPrice(product.compareAtKZT ?? 0, t.common.price.kzt)}</s>
+                          <span className="text-white/20"> · </span>
+                          {formatPrice(product.priceUSD, t.common.price.usd)}{' '}
+                          <s className="text-white/25">{formatPrice(product.compareAtUSD ?? 0, t.common.price.usd)}</s>
+                        </p>
+                        <p className="text-xs text-emerald-400/80">
+                          {po.savingsLabel}: {formatPrice(product.compareAtRUB - product.priceRUB, t.common.price.rub)} · {formatPrice((product.compareAtKZT ?? 0) - product.priceKZT, t.common.price.kzt)}
+                        </p>
+                      </div>
+                    ) : (
+                      <div>
+                        <span className="font-display text-3xl font-light tabular-nums">
+                          {formatPrice(product.priceRUB, t.common.price.rub)}
+                        </span>
+                        <p className="text-sm text-white/40 mt-1">
+                          {formatPrice(product.priceKZT, t.common.price.kzt)} · {formatPrice(product.priceUSD, t.common.price.usd)}
+                        </p>
+                      </div>
+                    )}
 
                     {product.colors && (
                       <div className="space-y-3">
@@ -613,6 +647,11 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
                     )}
 
                     <div className="space-y-2.5 pt-1">
+                      {isPreorder && !isSoldOut && (
+                        <p className="text-xs text-white/55 leading-relaxed border-l-2 border-red-500/60 pl-3">
+                          {po.noRefund}
+                        </p>
+                      )}
                       {isSoldOut ? (
                         <Button disabled className="w-full bg-white/8 text-white/35 py-6 text-sm cursor-not-allowed">
                           {t.status.soldOut}
@@ -623,18 +662,38 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
                             onClick={handleBuyNow}
                             className="w-full bg-white text-black hover:bg-white/90 py-6 text-sm font-medium transition-colors"
                           >
-                            {t.quickOrder.buyNow}
+                            {isPreorder ? t.status.preorderCta : t.quickOrder.buyNow}
                           </Button>
                           <Button
                             onClick={handleAddToCart}
                             variant="outline"
                             className="w-full border-white/15 text-white hover:bg-white hover:text-black py-6 text-sm transition-colors"
                           >
-                            {isPreorder ? t.status.preorderCta : t.quickOrder.addToCart}
+                            {isPreorder ? po.addToCart : t.quickOrder.addToCart}
                           </Button>
                         </>
                       )}
                     </div>
+
+                    {isPreorder && (
+                      <div className="border border-white/10 bg-white/[0.03] p-5 space-y-3">
+                        <p className="text-xs tracking-[0.18em] uppercase text-white/60">{po.infoTitle}</p>
+                        <ul className="space-y-2">
+                          {po.points.map((pt, i) => (
+                            <li key={i} className="flex gap-2.5 text-sm text-white/65 leading-relaxed">
+                              <span className="mt-2 h-1 w-1 rounded-full bg-white/50 flex-shrink-0" />
+                              {pt}
+                            </li>
+                          ))}
+                        </ul>
+                        <Link
+                          href="/faq"
+                          className="inline-block text-xs text-white/50 hover:text-white underline underline-offset-4 transition-colors"
+                        >
+                          {po.faqLink} →
+                        </Link>
+                      </div>
+                    )}
                   </>
                 )}
               </div>
@@ -713,8 +772,15 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
         ) : (
           <div className="flex items-center justify-between px-4 py-3 gap-4">
             <div>
-              <p className="text-base font-light tabular-nums">{formatPrice(product.priceRUB, t.common.price.rub)}</p>
-              <p className="text-[10px] text-white/35">{selectedSize} · {quantity} {t.cart.pieces}</p>
+              <p className="text-base font-light tabular-nums">
+                {formatPrice(product.priceRUB, t.common.price.rub)}
+                {isPreorder && product.compareAtRUB && (
+                  <s className="ml-2 text-xs text-white/30">{formatPrice(product.compareAtRUB, t.common.price.rub)}</s>
+                )}
+              </p>
+              <p className="text-[10px] text-white/35">
+                {isPreorder ? `${po.stickyNote} · ` : ''}{selectedSize} · {quantity} {t.cart.pieces}
+              </p>
             </div>
             {isSoldOut ? (
               <Button disabled className="bg-white/8 text-white/35 px-8 cursor-not-allowed">
@@ -723,9 +789,9 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
             ) : (
               <Button
                 onClick={handleBuyNow}
-                className="bg-white text-black hover:bg-white/90 px-8 font-medium"
+                className="bg-white text-black hover:bg-white/90 px-6 font-medium"
               >
-                {t.quickOrder.buyNow}
+                {isPreorder ? t.status.preorderCta : t.quickOrder.buyNow}
               </Button>
             )}
           </div>

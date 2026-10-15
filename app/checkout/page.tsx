@@ -10,6 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useI18n } from '@/lib/i18n/context'
 import { PAY_T, colorLabel } from '@/lib/i18n/pay'
+import { PREORDER_T } from '@/lib/i18n/preorder'
 import { useCart, PRODUCTS } from '@/lib/cart/context'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -63,6 +64,10 @@ export default function CheckoutPage() {
 
   const [country, setCountry] = useState<Country>('ru')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const po = PREORDER_T[language]
+  const hasPreorder = items.some((i) => PRODUCTS[i.productId].status === 'preorder')
+  const [preorderAgree, setPreorderAgree] = useState(false)
+  const [preorderError, setPreorderError] = useState(false)
 
   useEffect(() => {
     if (items.length === 0 && !isSubmitting) router.push('/')
@@ -86,6 +91,10 @@ export default function CheckoutPage() {
       : { amount: totalPriceRUB, cur: t.common.price.rub }
 
   const onSubmit = async (data: CheckoutFormData) => {
+    if (hasPreorder && !preorderAgree) {
+      setPreorderError(true)
+      return
+    }
     setIsSubmitting(true)
     try {
       const res = await fetch('/api/orders', {
@@ -104,14 +113,17 @@ export default function CheckoutPage() {
           paymentMethod: paymentApi,
           items: items.map((item) => ({
             productId: item.productId,
-            productName: PRODUCTS[item.productId].name,
+            productName:
+              PRODUCTS[item.productId].name +
+              (PRODUCTS[item.productId].status === 'preorder' ? ' · ПРЕДЗАКАЗ' : ''),
             size: item.size,
             color: item.color || undefined,
             quantity: item.quantity,
             priceKZT: item.quantity * PRODUCTS[item.productId].priceKZT,
           })),
           totalKZT: totalPriceKZT,
-          totalUSD: totalPriceUSD,
+          // В базе USD — целое число; клиенту показываем точную сумму (напр. 44,99 $)
+          totalUSD: Math.max(1, Math.round(totalPriceUSD)),
           totalRUB: totalPriceRUB,
           deliveryFeeKZT,
         }),
@@ -273,7 +285,14 @@ export default function CheckoutPage() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2">
-                            <h3 className="text-sm font-medium leading-tight">{product.name}</h3>
+                            <h3 className="text-sm font-medium leading-tight">
+                              {product.name}
+                              {product.status === 'preorder' && (
+                                <span className="ml-2 align-middle text-[9px] tracking-[0.15em] uppercase border border-white/25 px-1.5 py-0.5 text-white/70">
+                                  {po.stickyNote}
+                                </span>
+                              )}
+                            </h3>
                             <button type="button" onClick={() => removeItem(item.productId, item.size, item.color)} className="text-white/30 hover:text-red-400 flex-shrink-0" aria-label="×">
                               <Trash2 className="h-3.5 w-3.5" />
                             </button>
@@ -325,8 +344,31 @@ export default function CheckoutPage() {
                   )}
                 </div>
 
+                {hasPreorder && (
+                  <div className="space-y-3 rounded-lg border border-white/15 bg-white/[0.04] p-4">
+                    <p className="text-sm font-medium">{po.checkoutTitle}</p>
+                    <p className="text-xs text-white/60 leading-relaxed">{po.checkoutBody}</p>
+                    <label className="flex items-start gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={preorderAgree}
+                        onChange={(e) => {
+                          setPreorderAgree(e.target.checked)
+                          if (e.target.checked) setPreorderError(false)
+                        }}
+                        className="mt-0.5 h-4 w-4 flex-shrink-0 accent-white"
+                      />
+                      <span className="text-xs text-white/80 leading-relaxed">{po.agree}</span>
+                    </label>
+                    {preorderError && <p className="text-xs text-red-400">{po.agreeError}</p>}
+                    <Link href="/faq" target="_blank" className="inline-block text-xs text-white/40 hover:text-white underline underline-offset-4">
+                      {po.faqLink}
+                    </Link>
+                  </div>
+                )}
+
                 <Button type="submit" disabled={isSubmitting} className="w-full bg-white text-black hover:bg-white/90 py-6 text-base font-medium disabled:opacity-50">
-                  {isSubmitting ? '...' : p.placeOrder}
+                  {isSubmitting ? '...' : hasPreorder ? t.status.preorderCta : p.placeOrder}
                 </Button>
                 <p className="text-[11px] text-white/40 text-center leading-relaxed">{p.afterOrderHint}</p>
               </div>
