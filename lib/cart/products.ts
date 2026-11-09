@@ -1,6 +1,6 @@
 export type Size = 'S' | 'M' | 'L' | 'XL'
 
-export type ProductId = 'one-ummah-zip-hoodie' | 'awrah-shorts'
+export type ProductId = 'tawakkul-hoodie' | 'one-ummah-zip-hoodie' | 'awrah-shorts'
 
 export type ProductStatus = 'available' | 'preorder' | 'coming_soon' | 'sold_out'
 
@@ -32,8 +32,37 @@ export interface Product {
   hasSizeChart: boolean
 }
 
-// Порядок здесь = порядок на главной. Худи первым, шорты вторым.
+// Порядок здесь = порядок на главной:
+// 1) HOODIE TAWAKKUL (новинка), 2) ONE UMMAH ZIP HOODIE, 3) AWRAH SHORTS.
 export const PRODUCTS: Record<ProductId, Product> = {
+  'tawakkul-hoodie': {
+    id: 'tawakkul-hoodie',
+    slug: 'tawakkul-hoodie',
+    name: 'HOODIE TAWAKKUL',
+    subtitle: '',
+    // ПРЕДЗАКАЗ. Партия уже пошита, в пути. Старая цена — зачёркнута.
+    priceKZT: 19990,
+    priceUSD: 44.99,
+    priceRUB: 3790,
+    compareAtKZT: 21990,
+    compareAtUSD: 49,
+    compareAtRUB: 3990,
+    sizes: ['S', 'M', 'L', 'XL'],
+    status: 'preorder',
+    thumb: '/photos/tawakkul/street-mosque.jpg',
+    gallery: [
+      '/photos/tawakkul/street-mosque.jpg',
+      '/photos/tawakkul/day-night.jpg',
+      '/photos/tawakkul/front.jpg',
+      '/photos/tawakkul/print-snow.jpg',
+      '/photos/tawakkul/blizzard.jpg',
+      '/photos/tawakkul/chairlift.jpg',
+      '/photos/tawakkul/elevator.jpg',
+      '/photos/tawakkul/print-detail.jpg',
+    ],
+    // Отдельной таблицы мерок для этой модели пока нет — помогаем с размером в WA/TG.
+    hasSizeChart: false,
+  },
   'one-ummah-zip-hoodie': {
     id: 'one-ummah-zip-hoodie',
     slug: 'one-ummah-zip-hoodie',
@@ -68,11 +97,13 @@ export const PRODUCTS: Record<ProductId, Product> = {
     priceUSD: 26,
     priceRUB: 2000,
     sizes: ['M', 'L', 'XL'],
-    colors: ['BLACK', 'NAVY', 'GREY'],
-    // Чёрный и синий: размеры M и L распроданы (доступен только XL). Серый — все размеры.
+    // В наличии только: NAVY — XL, GREY — M. Всё остальное распродано.
+    // Чёрный распродан полностью — стоит последним и показывается как «нет в наличии».
+    colors: ['NAVY', 'GREY', 'BLACK'],
     outOfStock: {
-      BLACK: ['M', 'L'],
       NAVY: ['M', 'L'],
+      GREY: ['L', 'XL'],
+      BLACK: ['M', 'L', 'XL'],
     },
     status: 'available',
     thumb: '/photos/IMG_2718.JPG',

@@ -7,7 +7,7 @@ import { X, Minus, Plus, Trash2, ShoppingBag } from 'lucide-react'
 import { useI18n } from '@/lib/i18n/context'
 import { useCart, PRODUCTS } from '@/lib/cart/context'
 import { colorLabel } from '@/lib/i18n/pay'
-import { PREORDER_T } from '@/lib/i18n/preorder'
+import { PREORDER_T, preorderNotes } from '@/lib/i18n/preorder'
 import { Button } from '@/components/ui/button'
 import { useIsMobile } from '@/hooks/use-mobile'
 
@@ -28,11 +28,14 @@ export function CartDrawer() {
   } = useCart()
 
   const po = PREORDER_T[language]
-  const hasPreorder = items.some((i) => PRODUCTS[i.productId].status === 'preorder')
-  const preorderNote = hasPreorder ? (
-    <p className="text-xs text-white/60 leading-relaxed bg-white/5 border border-white/10 rounded-lg p-3 mb-4">
-      {po.cartNote}
-    </p>
+  const notes = preorderNotes(
+    language,
+    items.filter((i) => PRODUCTS[i.productId].status === 'preorder').map((i) => i.productId)
+  )
+  const preorderNote = notes.length > 0 ? (
+    <div className="space-y-1.5 text-xs text-white/60 leading-relaxed bg-white/5 border border-white/10 rounded-lg p-3 mb-4">
+      {notes.map((n) => <p key={n}>{n}</p>)}
+    </div>
   ) : null
 
   const formatPrice = (price: number, currency: string) => {

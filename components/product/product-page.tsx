@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation'
 import { useI18n } from '@/lib/i18n/context'
 import { useCart } from '@/lib/cart/context'
 import { colorLabel } from '@/lib/i18n/pay'
-import { PREORDER_T } from '@/lib/i18n/preorder'
+import { PREORDER_T, preorderInfo } from '@/lib/i18n/preorder'
 import { Product, Size, Color, SHORTS_COLOR_IMAGE } from '@/lib/cart/products'
 import { Button } from '@/components/ui/button'
 import { Header } from '@/components/layout/header'
@@ -117,10 +117,15 @@ function StorySection({ block, index }: { block: StoryBlock; index: number }) {
 export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
   const { t, language } = useI18n()
   const po = PREORDER_T[language]
+  const pi = preorderInfo(language, product.id)
   const { addItem, setIsCartOpen } = useCart()
   const router = useRouter()
 
-  const initColor = product.colors?.[0] ?? null
+  // Первый цвет, у которого есть хоть один размер в наличии
+  const colorFullyOut = (c: Color) =>
+    product.sizes.every((s) => (product.outOfStock?.[c] || []).includes(s))
+  const initColor =
+    product.colors?.find((c) => !colorFullyOut(c)) ?? product.colors?.[0] ?? null
   const initOut = (initColor && product.outOfStock?.[initColor]) || []
   const preferredSize = product.sizes[1] ?? product.sizes[0]
   const [selectedSize, setSelectedSize] = useState<Size>(
@@ -199,6 +204,8 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
     : null
 
   const currentOut = (selectedColor && product.outOfStock?.[selectedColor]) || []
+  // Нельзя купить, если выбранный размер этого цвета распродан
+  const sizeUnavailable = currentOut.includes(selectedSize)
 
   return (
     <>
@@ -517,9 +524,11 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
                           <span className="text-[10px] tracking-[0.2em] uppercase text-white/50">
                             {po.priceLabel}
                           </span>
-                          <span className="text-[10px] tracking-[0.12em] uppercase border border-white/25 text-white/80 px-2 py-0.5">
-                            {po.limited}
-                          </span>
+                          {pi?.limited && (
+                            <span className="text-[10px] tracking-[0.12em] uppercase border border-white/25 text-white/80 px-2 py-0.5">
+                              {pi.limited}
+                            </span>
+                          )}
                         </div>
                         <div className="flex items-baseline gap-3 flex-wrap">
                           <span className="font-display text-4xl font-light tabular-nums">
@@ -561,13 +570,18 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
                           )}
                         </div>
                         <div className={`grid gap-2.5 ${product.colors.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
-                          {product.colors.map((color) => (
+                          {product.colors.map((color) => {
+                            const out = colorFullyOut(color)
+                            return (
                             <button
                               key={color}
                               type="button"
-                              onClick={() => handleSelectColor(color)}
+                              disabled={out}
+                              onClick={() => { if (!out) handleSelectColor(color) }}
                               className={`relative flex flex-col items-center gap-2 py-3.5 transition-all duration-200 ${
-                                selectedColor === color
+                                out
+                                  ? 'border border-white/5 opacity-40 cursor-not-allowed'
+                                  : selectedColor === color
                                   ? 'ring-1 ring-white bg-white/5'
                                   : 'border border-white/10 hover:border-white/30'
                               }`}
@@ -577,12 +591,16 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
                                 style={{ backgroundColor: COLOR_HEX[color] }}
                               />
                               <span className={`text-[10px] font-medium tracking-[0.1em] uppercase ${
-                                selectedColor === color ? 'text-white' : 'text-white/40'
+                                out ? 'text-white/40 line-through' : selectedColor === color ? 'text-white' : 'text-white/40'
                               }`}>
                                 {colorLabel(language, color)}
                               </span>
+                              {out && (
+                                <span className="text-[9px] tracking-[0.1em] uppercase text-white/40">{t.status.soldOut}</span>
+                              )}
                             </button>
-                          ))}
+                            )
+                          })}
                         </div>
                       </div>
                     )}
@@ -590,13 +608,22 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-xs tracking-[0.15em] uppercase text-white/50">{t.sizeChart.size}</span>
-                        {product.hasSizeChart && (
+                        {product.hasSizeChart ? (
                           <button
                             onClick={() => setShowSizeChart(true)}
                             className="text-xs text-white/35 underline underline-offset-4 hover:text-white transition-colors"
                           >
                             {t.quickOrder.sizeChart}
                           </button>
+                        ) : (
+                          <a
+                            href={`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(`Ассаляму алейкум! Помогите подобрать размер ${product.name}`)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-white/35 underline underline-offset-4 hover:text-white transition-colors text-right"
+                          >
+                            {po.sizeHelp}
+                          </a>
                         )}
                       </div>
                       <div className="grid grid-cols-4 gap-2">
@@ -652,7 +679,7 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
                           {po.noRefund}
                         </p>
                       )}
-                      {isSoldOut ? (
+                      {isSoldOut || sizeUnavailable ? (
                         <Button disabled className="w-full bg-white/8 text-white/35 py-6 text-sm cursor-not-allowed">
                           {t.status.soldOut}
                         </Button>
@@ -675,11 +702,11 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
                       )}
                     </div>
 
-                    {isPreorder && (
+                    {isPreorder && pi && (
                       <div className="border border-white/10 bg-white/[0.03] p-5 space-y-3">
                         <p className="text-xs tracking-[0.18em] uppercase text-white/60">{po.infoTitle}</p>
                         <ul className="space-y-2">
-                          {po.points.map((pt, i) => (
+                          {pi.points.map((pt, i) => (
                             <li key={i} className="flex gap-2.5 text-sm text-white/65 leading-relaxed">
                               <span className="mt-2 h-1 w-1 rounded-full bg-white/50 flex-shrink-0" />
                               {pt}
@@ -782,7 +809,7 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
                 {isPreorder ? `${po.stickyNote} · ` : ''}{selectedSize} · {quantity} {t.cart.pieces}
               </p>
             </div>
-            {isSoldOut ? (
+            {isSoldOut || sizeUnavailable ? (
               <Button disabled className="bg-white/8 text-white/35 px-8 cursor-not-allowed">
                 {t.status.soldOut}
               </Button>

@@ -3,15 +3,20 @@
 import { useI18n } from '@/lib/i18n/context'
 import { getProduct, ProductId } from '@/lib/cart/products'
 import { ProductPage, StoryBlock } from './product-page'
+import { TAWAKKUL_HOODIE_T } from '@/lib/i18n/tawakkul-hoodie'
 
 export function ProductContent({ productId }: { productId: ProductId }) {
-  const { t } = useI18n()
+  const { t, language } = useI18n()
   const product = getProduct(productId)
 
   let tagline: string
   let blocks: StoryBlock[]
 
-  if (productId === 'one-ummah-zip-hoodie') {
+  if (productId === 'tawakkul-hoodie') {
+    const tw = TAWAKKUL_HOODIE_T[language]
+    tagline = tw.tagline
+    blocks = tw.blocks
+  } else if (productId === 'one-ummah-zip-hoodie') {
     tagline = t.quickOrder.label
     blocks = [
       {

@@ -10,7 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useI18n } from '@/lib/i18n/context'
 import { PAY_T, colorLabel } from '@/lib/i18n/pay'
-import { PREORDER_T } from '@/lib/i18n/preorder'
+import { PREORDER_T, preorderNotes } from '@/lib/i18n/preorder'
 import { useCart, PRODUCTS } from '@/lib/cart/context'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -65,7 +65,11 @@ export default function CheckoutPage() {
   const [country, setCountry] = useState<Country>('ru')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const po = PREORDER_T[language]
-  const hasPreorder = items.some((i) => PRODUCTS[i.productId].status === 'preorder')
+  const preorderIds = items
+    .filter((i) => PRODUCTS[i.productId].status === 'preorder')
+    .map((i) => i.productId)
+  const hasPreorder = preorderIds.length > 0
+  const notes = preorderNotes(language, preorderIds)
   const [preorderAgree, setPreorderAgree] = useState(false)
   const [preorderError, setPreorderError] = useState(false)
 
@@ -347,7 +351,10 @@ export default function CheckoutPage() {
                 {hasPreorder && (
                   <div className="space-y-3 rounded-lg border border-white/15 bg-white/[0.04] p-4">
                     <p className="text-sm font-medium">{po.checkoutTitle}</p>
-                    <p className="text-xs text-white/60 leading-relaxed">{po.checkoutBody}</p>
+                    {notes.map((n) => (
+                      <p key={n} className="text-xs text-white/70 leading-relaxed">{n}</p>
+                    ))}
+                    <p className="text-xs text-white/50 leading-relaxed">{po.checkoutCommon}</p>
                     <label className="flex items-start gap-3 cursor-pointer">
                       <input
                         type="checkbox"

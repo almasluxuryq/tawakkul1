@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import { CreditCard, MessageCircle, ExternalLink, Send, Package, Copy, Check } from 'lucide-react'
 import { useI18n } from '@/lib/i18n/context'
 import { PAY_T, colorLabel } from '@/lib/i18n/pay'
-import { PREORDER_T } from '@/lib/i18n/preorder'
+import { PREORDER_T, preorderNotes } from '@/lib/i18n/preorder'
 import { PRODUCTS, ProductId, Color } from '@/lib/cart/context'
 import { Button } from '@/components/ui/button'
 
@@ -137,7 +137,13 @@ export default function CheckoutSuccessPage() {
 
   const m = MSG_T[language]
   const po = PREORDER_T[language]
-  const hasPreorder = !!order?.items.some((i) => PRODUCTS[i.productId]?.status === 'preorder')
+  const notes = preorderNotes(
+    language,
+    (order?.items ?? [])
+      .filter((i) => PRODUCTS[i.productId]?.status === 'preorder')
+      .map((i) => i.productId)
+  )
+  const hasPreorder = notes.length > 0
 
   const orderMessage = (() => {
     if (!order) return ''
@@ -191,7 +197,7 @@ export default function CheckoutSuccessPage() {
 
         {hasPreorder && (
           <div className="mb-5 rounded-xl border border-white/15 bg-white/[0.04] p-4 text-sm text-white/70 leading-relaxed">
-            {po.successNote}
+            {notes.map((n) => <p key={n}>{n}</p>)}
           </div>
         )}
 

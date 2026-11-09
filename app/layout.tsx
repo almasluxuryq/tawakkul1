@@ -28,12 +28,12 @@ const cormorant = Cormorant({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://twkklbrand.com'),
   title: 'TAWAKKUL (TWKKL) — Исламский премиальный стритвир',
-  description: 'Одна вера. Одна умма. Премиальная одежда с характером. ONE UMMAH ZIP HOODIE и AWRAH SHORTS. Доставка по Казахстану и России.',
-  keywords: ['twkkl', 'tawakkul', 'one ummah', 'awrah shorts', 'hoodie', 'streetwear', 'islamic fashion', 'premium', 'исламский стритвир'],
+  description: 'Одна вера. Одна умма. Премиальная одежда с характером. HOODIE TAWAKKUL, ONE UMMAH ZIP HOODIE и AWRAH SHORTS. Доставка по Казахстану и России.',
+  keywords: ['twkkl', 'tawakkul', 'tawakkul hoodie', 'reflective hoodie', 'توكل', 'one ummah', 'awrah shorts', 'hoodie', 'streetwear', 'islamic fashion', 'premium', 'исламский стритвир'],
   authors: [{ name: 'TAWAKKUL' }],
   openGraph: {
     title: 'TAWAKKUL (TWKKL) — Исламский премиальный стритвир',
-    description: 'Одна вера. Одна умма. Без границ. ONE UMMAH ZIP HOODIE и AWRAH SHORTS.',
+    description: 'Одна вера. Одна умма. Без границ. HOODIE TAWAKKUL, ONE UMMAH ZIP HOODIE и AWRAH SHORTS.',
     type: 'website',
     locale: 'ru_RU',
     alternateLocale: ['kk_KZ', 'en_US'],
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'TAWAKKUL (TWKKL) — Исламский премиальный стритвир',
-    description: 'Одна вера. Одна умма. Без границ. ONE UMMAH ZIP HOODIE и AWRAH SHORTS.',
+    description: 'Одна вера. Одна умма. Без границ. HOODIE TAWAKKUL, ONE UMMAH ZIP HOODIE и AWRAH SHORTS.',
     images: ['/og-image.jpg'],
   },
   icons: {
