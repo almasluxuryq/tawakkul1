@@ -60,8 +60,8 @@ export const PRODUCTS: Record<ProductId, Product> = {
       '/photos/tawakkul/elevator.jpg',
       '/photos/tawakkul/print-detail.jpg',
     ],
-    // Отдельной таблицы мерок для этой модели пока нет — помогаем с размером в WA/TG.
-    hasSizeChart: false,
+    // Таблица рост/вес — components/modals/size-chart-modal.tsx
+    hasSizeChart: true,
   },
   'one-ummah-zip-hoodie': {
     id: 'one-ummah-zip-hoodie',

@@ -826,7 +826,7 @@ export function ProductPage({ product, tagline, blocks }: ProductPageProps) {
       </div>
 
       {product.hasSizeChart && (
-        <SizeChartModal open={showSizeChart} onOpenChange={setShowSizeChart} sizes={product.sizes} />
+        <SizeChartModal open={showSizeChart} onOpenChange={setShowSizeChart} sizes={product.sizes} productId={product.id} />
       )}
     </>
   )

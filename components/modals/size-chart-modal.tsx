@@ -1,7 +1,7 @@
 'use client'
 
 import { useI18n } from '@/lib/i18n/context'
-import { Size } from '@/lib/cart/products'
+import { Size, ProductId } from '@/lib/cart/products'
 import {
   Dialog,
   DialogContent,
@@ -18,22 +18,40 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
-const sizeData = [
-  { size: 'S', height: '165–172', weight: '55–68' },
-  { size: 'M', height: '172–180', weight: '65–78' },
-  { size: 'L', height: '180–188', weight: '75–90' },
-  { size: 'XL', height: '188–196', weight: '88–110' },
-]
+type Row = { size: Size; height: string; weight: string }
+
+// Рекомендуемый рост (см) / вес (кг) — отдельно для каждой модели.
+const SIZE_CHARTS: Record<ProductId, Row[]> = {
+  'tawakkul-hoodie': [
+    { size: 'S', height: '165–172', weight: '55–68' },
+    { size: 'M', height: '170–178', weight: '65–78' },
+    { size: 'L', height: '176–185', weight: '75–88' },
+    { size: 'XL', height: '183–195+', weight: '88–105+' },
+  ],
+  'one-ummah-zip-hoodie': [
+    { size: 'S', height: '165–172', weight: '55–68' },
+    { size: 'M', height: '172–180', weight: '65–78' },
+    { size: 'L', height: '180–188', weight: '75–90' },
+    { size: 'XL', height: '188–196', weight: '88–110' },
+  ],
+  'awrah-shorts': [
+    { size: 'M', height: '165–175', weight: '60–73' },
+    { size: 'L', height: '176–185', weight: '75–88' },
+    { size: 'XL', height: '183–195+', weight: '90–105+' },
+  ],
+}
 
 interface SizeChartModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   sizes?: Size[]
+  productId: ProductId
 }
 
-export function SizeChartModal({ open, onOpenChange, sizes }: SizeChartModalProps) {
+export function SizeChartModal({ open, onOpenChange, sizes, productId }: SizeChartModalProps) {
   const { t } = useI18n()
-  const rows = sizes ? sizeData.filter((r) => sizes.includes(r.size as Size)) : sizeData
+  const data = SIZE_CHARTS[productId]
+  const rows = sizes ? data.filter((r) => sizes.includes(r.size)) : data
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
